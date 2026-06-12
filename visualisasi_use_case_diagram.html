@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generator Use Case Diagram Interaktif - Moh. Raffi Alfatih</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas untuk Ekspor PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap");
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #0b1329;
+      }
+
+      .font-mono {
+        font-family: "Fira Code", monospace;
+      }
+
+      /* Grid latar belakang bernuansa teknik / cetak biru */
+      .grid-bg {
+        background-size: 24px 24px;
+        background-image:
+          linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px
+          );
+      }
+
+      /* Gaya interaktif untuk elemen Use Case */
+      .usecase-oval {
+        border-radius: 50% / 50%;
+        cursor: grab;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+
+      .usecase-oval:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+
+      /* Gaya untuk Aktor */
+      .actor-box {
+        cursor: grab;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .actor-box:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body class="text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+    <!-- Header Panel -->
+    <header
+      class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4"
+    >
+      <div
+        class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="bg-violet-600 p-2.5 rounded-xl shadow-lg shadow-violet-500/20"
+          >
+            <svg
+              class="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-white flex items-center gap-2">
+              Interactive Use Case Diagram & Use Case Description
+              <span
+                class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20"
+                >APSI Sesi 11</span
+              >
+            </h1>
+            <p class="text-xs text-slate-400">
+              Tugas Praktis: Moh. Raffi Alfatih (NIM: 20240040066)
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-2 w-full md:w-auto">
+          <button
+            onclick="exportDiagram()"
+            class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold px-4 py-2 rounded-lg transition shadow-md shadow-violet-500/10"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              ></path>
+            </svg>
+            Unduh Diagram (PNG)
+          </button>
+          <button
+            onclick="resetElements()"
+            class="flex-1 md:flex-initial text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg border border-slate-700 transition"
+          >
+            Reset Posisi
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Konten Utama (Grid Flex) -->
+    <main
+      class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col lg:flex-row gap-6 items-stretch"
+    >
+      <!-- Kolom Kiri: Kanvas Use Case Diagram -->
+      <section class="flex-1 flex flex-col gap-4 min-w-0">
+        <div
+          id="diagram-canvas-container"
+          class="bg-slate-950 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col relative h-[650px] w-full max-w-full"
+          style="resize: both"
+        >
+          <!-- Sub Header Kanvas -->
+          <div
+            class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
+          >
+            <div class="flex items-center gap-2">
+              <span
+                class="w-2.5 h-2.5 rounded-full bg-violet-500 animate-pulse"
+              ></span>
+              <span
+                class="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >Kanvas Diagram (Klik use case/aktor untuk melihat deskripsi
+                SOP)</span
+              >
+            </div>
+            <div class="text-[10px] text-slate-500 flex gap-3">
+              <span>Solid = Asosiasi</span>
+              <span>Dotted = Include/Extend</span>
+            </div>
+          </div>
+
+          <!-- Capture Target Area -->
+          <div
+            id="diagram-capture-area"
+            class="flex-1 w-full h-full relative grid-bg overflow-auto bg-[#0a0f1d] p-4"
+          >
+            <!-- SVG Overlay untuk Menggambar Garis Relasi -->
+            <svg
+              id="relation-svg"
+              class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[1000px] min-h-[600px]"
+            >
+              <defs>
+                <!-- Marker Panah Solid (Asosiasi) -->
+                <marker
+                  id="arrow-solid"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+                </marker>
+                <!-- Marker Panah Putus-putus (Include/Extend) -->
+                <marker
+                  id="arrow-dashed"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 2 L 10 5 L 0 8 z" fill="#a78bfa" />
+                </marker>
+              </defs>
+            </svg>
+
+            <!-- SYSTEM BOUNDARY BOX (Sistem Toko Retail) -->
+            <div
+              id="system-boundary"
+              class="absolute border-2 border-dashed border-slate-700/60 rounded-3xl bg-slate-950/10 pointer-events-none"
+              style="left: 230px; top: 30px; width: 540px; height: 530px"
+            >
+              <div
+                class="absolute -top-3 left-6 bg-[#0a0f1d] px-3 py-0.5 border border-slate-800 rounded-full text-[10px] font-bold tracking-widest text-slate-400"
+              >
+                BATAS SISTEM: MINI MARKET POS & INVENTORY
+              </div>
+            </div>
+
+            <!-- ================= AKTOR-AKTOR ================= -->
+
+            <!-- AKTOR 1: KASIR (Kiri) -->
+            <div
+              id="actor-kasir"
+              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+              style="left: 50px; top: 180px"
+            >
+              <!-- Stick-man SVG Drawing -->
+              <svg
+                class="w-12 h-20 text-emerald-400"
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+              >
+                <circle cx="50" cy="20" r="15" />
+                <!-- Kepala -->
+                <line x1="50" y1="35" x2="50" y2="70" />
+                <!-- Tubuh -->
+                <line x1="50" y1="45" x2="20" y2="35" />
+                <!-- Tangan Kiri -->
+                <line x1="50" y1="45" x2="80" y2="35" />
+                <!-- Tangan Kanan -->
+                <line x1="50" y1="70" x2="25" y2="95" />
+                <!-- Kaki Kiri -->
+                <line x1="50" y1="70" x2="75" y2="95" />
+                <!-- Kaki Kanan -->
+              </svg>
+              <span class="text-xs font-bold text-emerald-300 mt-1 select-none"
+                >KASIR</span
+              >
+            </div>
+
+            <!-- AKTOR 2: ADMIN GUDANG (Kanan Atas) -->
+            <div
+              id="actor-admin"
+              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+              style="left: 810px; top: 90px"
+            >
+              <svg
+                class="w-12 h-20 text-sky-400"
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+              >
+                <circle cx="50" cy="20" r="15" />
+                <line x1="50" y1="35" x2="50" y2="70" />
+                <line x1="50" y1="45" x2="20" y2="35" />
+                <line x1="50" y1="45" x2="80" y2="35" />
+                <line x1="50" y1="70" x2="25" y2="95" />
+                <line x1="50" y1="70" x2="75" y2="95" />
+              </svg>
+              <span
+                class="text-xs font-bold text-sky-300 mt-1 select-none text-center leading-tight"
+                >ADMIN GUDANG</span
+              >
+            </div>
+
+            <!-- AKTOR 3: MANAJER (Kanan Bawah) -->
+            <div
+              id="actor-manajer"
+              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+              style="left: 810px; top: 310px"
+            >
+              <svg
+                class="w-12 h-20 text-rose-400"
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+              >
+                <circle cx="50" cy="20" r="15" />
+                <line x1="50" y1="35" x2="50" y2="70" />
+                <line x1="50" y1="45" x2="20" y2="35" />
+                <line x1="50" y1="45" x2="80" y2="35" />
+                <line x1="50" y1="70" x2="25" y2="95" />
+                <line x1="50" y1="70" x2="75" y2="95" />
+              </svg>
+              <span class="text-xs font-bold text-rose-300 mt-1 select-none"
+                >MANAJER</span
+              >
+            </div>
+
+            <!-- ================= USE CASES ================= -->
+
+            <!-- UC-01: LOGIN -->
+            <div
+              id="usecase-login"
+              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 410px; top: 60px"
+            >
+              <span class="text-[9px] font-bold text-violet-400 font-mono"
+                >UC-01</span
+              >
+              <span class="text-[11px] font-extrabold leading-tight"
+                >Login Multi-User</span
+              >
+            </div>
+
+            <!-- UC-02: KELOLA BARANG -->
+            <div
+              id="usecase-kelola"
+              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 410px; top: 150px"
+            >
+              <span class="text-[9px] font-bold text-violet-400 font-mono"
+                >UC-02</span
+              >
+              <span class="text-[11px] font-extrabold leading-tight"
+                >Kelola Data Barang</span
+              >
+            </div>
+
+            <!-- UC-03: TRANSAKSI PENJUALAN -->
+            <div
+              id="usecase-transaksi"
+              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 410px; top: 240px"
+            >
+              <span class="text-[9px] font-bold text-violet-400 font-mono"
+                >UC-03</span
+              >
+              <span class="text-[11px] font-extrabold leading-tight"
+                >Memproses Penjualan</span
+              >
+            </div>
+
+            <!-- UC-04: CETAK STRUK (INCLUDED) -->
+            <div
+              id="usecase-cetak"
+              class="usecase-oval absolute border-2 border-amber-500 bg-slate-900/90 text-amber-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 270px; top: 350px"
+            >
+              <span class="text-[9px] font-bold text-amber-400 font-mono"
+                >UC-04</span
+              >
+              <span class="text-[10px] font-extrabold leading-tight"
+                >Cetak Struk Belanja</span
+              >
+            </div>
+
+            <!-- UC-05: DISKON MEMBER (EXTENDED) -->
+            <div
+              id="usecase-diskon"
+              class="usecase-oval absolute border-2 border-fuchsia-500 bg-slate-900/90 text-fuchsia-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 570px; top: 350px"
+            >
+              <span class="text-[9px] font-bold text-fuchsia-400 font-mono"
+                >UC-05</span
+              >
+              <span class="text-[10px] font-extrabold leading-tight"
+                >Berikan Diskon Member</span
+              >
+            </div>
+
+            <!-- UC-06: RESTOCK BARANG -->
+            <div
+              id="usecase-restock"
+              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 410px; top: 410px"
+            >
+              <span class="text-[9px] font-bold text-violet-400 font-mono"
+                >UC-06</span
+              >
+              <span class="text-[11px] font-extrabold leading-tight"
+                >Melakukan Restock</span
+              >
+            </div>
+
+            <!-- UC-07: MEMANTAU LAPORAN -->
+            <div
+              id="usecase-laporan"
+              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+              style="left: 410px; top: 490px"
+            >
+              <span class="text-[9px] font-bold text-violet-400 font-mono"
+                >UC-07</span
+              >
+              <span class="text-[11px] font-extrabold leading-tight"
+                >Memantau Laporan</span
+              >
+            </div>
+          </div>
+
+          <!-- Resize Handle Visual -->
+          <div
+            class="absolute bottom-0 right-0 w-5 h-5 pointer-events-none z-30 flex items-end justify-end p-0.5"
+          >
+            <svg
+              class="w-4 h-4 text-slate-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <line x1="22" y1="6" x2="6" y2="22" />
+              <line x1="22" y1="12" x2="12" y2="22" />
+              <line x1="22" y1="18" x2="18" y2="22" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Kolom Kanan: Use Case Description (SOP) Viewer -->
+      <section class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-6">
+        <div
+          class="bg-slate-950 p-5 rounded-2xl border border-slate-800 shadow-xl flex-1 flex flex-col justify-between overflow-hidden"
+        >
+          <div class="flex flex-col h-full overflow-hidden">
+            <h3
+              class="text-sm font-semibold text-violet-400 uppercase tracking-wider mb-4 flex-shrink-0"
+            >
+              Use Case Description
+            </h3>
+
+            <!-- Dropdown Selektor Fitur -->
+            <div class="mb-4 flex-shrink-0">
+              <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
+                >Pilih Use Case untuk melihat dokumen deskripsi:</label
+              >
+              <select
+                id="usecase-selector"
+                onchange="inspectUseCase(this.value)"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+              >
+                <option value="uc01">UC-01 Login Multi-User</option>
+                <option value="uc02">UC-02 Kelola Data Barang</option>
+                <option value="uc03">UC-03 Memproses Penjualan</option>
+                <option value="uc04">
+                  UC-04 Cetak Struk Belanja (Include)
+                </option>
+                <option value="uc05">
+                  UC-05 Berikan Diskon Member (Extend)
+                </option>
+                <option value="uc06">UC-06 Melakukan Restock Barang</option>
+                <option value="uc07">UC-07 Memantau Laporan Keuangan</option>
+              </select>
+            </div>
+
+            <!-- Kontainer Dokumen Detail (Scrollable) -->
+            <div
+              class="flex-1 overflow-y-auto pr-1 space-y-4 text-xs"
+              id="sop-document-container"
+            >
+              <!-- Konten akan dimuat via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 mt-8 bg-slate-950/60">
+      <div
+        class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500"
+      >
+        <p>© 2026 Moh. Raffi Alfatih (20240040066) - Universitas Nusa Putra.</p>
+        <p class="flex items-center gap-2">
+          Teknik Informatika
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span> Analisis
+          dan Desain Perangkat Lunak
+        </p>
+      </div>
+    </footer>
+
+    <!-- JavaScript Engine -->
+    <script>
+      // Database Dokumen Use Case Description (SOP) Lengkap
+      const useCaseDatabase = {
+        uc01: {
+          id: "UC-01",
+          name: "Login Multi-User",
+          actor: "Kasir, Admin Gudang, Manajer",
+          desc: "Proses autentikasi pengguna masuk ke dalam sistem sesuai hak akses masing-masing untuk menjaga keamanan data.",
+          pre: "Aplikasi sistem web retail telah terbuka di browser pengguna.",
+          post: "Sistem mengarahkan pengguna ke halaman beranda yang sesuai dengan peran mereka masing-masing.",
+          main: [
+            "Pengguna memasukkan Username dan Password.",
+            "Pengguna memilih Peran/Role (Kasir, Admin, atau Manajer).",
+            "Pengguna mengklik tombol 'Login'.",
+            "Sistem memvalidasi kredensial pengguna ke database.",
+            "Sistem mencatat waktu login ke log audit keamanan.",
+            "Sistem mengalihkan pengguna ke Dashboard sesuai dengan hak akses.",
+          ],
+          exception: [
+            "<strong>Alur 4.a:</strong> Kredensial tidak valid. Sistem menampilkan pesan error 'Username atau Password Salah!' dan mengosongkan input.",
+            "<strong>Alur 4.b:</strong> Akun terkunci karena salah menginput password 3 kali berturut-turut. Sistem menampilkan pesan blokir sementara.",
+          ],
+        },
+        uc02: {
+          id: "UC-02",
+          name: "Kelola Data Barang (Master Data)",
+          actor: "Admin Gudang",
+          desc: "Mengelola katalog barang jualan yang mencakup proses penambahan produk baru, edit harga beli/jual, serta penentuan jumlah pengamanan stok minimum.",
+          pre: "Admin Gudang telah login dan membuka menu 'Katalog Master Barang'.",
+          post: "Database Katalog barang terupdate dan notifikasi sinkronisasi muncul di sistem kasir.",
+          main: [
+            "Admin menekan tombol 'Tambah Barang'.",
+            "Admin memindai barcode produk atau mengetik barcode secara manual.",
+            "Admin melengkapi field formulir (Nama Produk, Kategori, Harga Beli, Harga Jual, Stok Minimal).",
+            "Admin menekan tombol 'Simpan'.",
+            "Sistem menyimpan data baru ke database 'D1 Barang'.",
+            "Sistem menampilkan notifikasi sukses 'Data Barang Berhasil Tersimpan'.",
+          ],
+          exception: [
+            "<strong>Alur 2.a:</strong> Kode Barcode sudah terdaftar di sistem. Sistem menampilkan peringatan 'Barcode sudah ada, apakah Anda ingin mengedit data?'.",
+          ],
+        },
+        uc03: {
+          id: "UC-03",
+          name: "Memproses Penjualan (Point of Sale)",
+          actor: "Kasir",
+          desc: "Mencatat daftar belanjaan pembeli di kasir, menghitung subtotal beserta pajak, memproses metode pembayaran, dan mengurangi stok digital secara otomatis.",
+          pre: "Kasir berada di halaman kasir aktif dan shift kerja telah dimulai.",
+          post: "Transaksi penjualan disimpan, laci kasir terbuka, dan stok barang terpotong.",
+          main: [
+            "Kasir memindai barcode produk belanjaan pelanggan satu per satu.",
+            "Sistem mengambil data harga, nama barang dari database, menghitung total belanja, dan menyertakan PPN 11%.",
+            "Kasir menekan tombol 'Selesaikan Transaksi'.",
+            "Sistem menawarkan diskon khusus apabila pelanggan merupakan member.",
+            "Kasir menginput nominal uang tunai yang diterima (atau memilih opsi QRIS).",
+            "Sistem mencatat transaksi penjualan ke database 'D2 Penjualan'.",
+            "Sistem otomatis mengurangi kuantitas stok di tabel barang.",
+            "Sistem otomatis mencetak struk belanja fisik.",
+          ],
+          exception: [
+            "<strong>Alur 2.a:</strong> Stok barang di sistem tercatat kosong (0). Sistem menampilkan pesan 'Stok Kosong!' dan transaksi tidak dapat dimasukkan.",
+            "<strong>Alur 5.a:</strong> Nominal uang bayar kurang. Sistem menampilkan peringatan dan mengunci opsi cetak struk hingga nominal mencukupi.",
+          ],
+        },
+        uc04: {
+          id: "UC-04",
+          name: "Cetak Struk Belanja (Include)",
+          actor: "Kasir",
+          desc: "Bagian tak terpisahkan (Inklusi) dari transaksi penjualan untuk mencetak bukti pembelian fisik berupa slip kertas struk belanja.",
+          pre: "Transaksi pembayaran telah berhasil diproses secara sah di database.",
+          post: "Kertas struk keluar dari printer kasir dan transaksi dinyatakan tuntas.",
+          main: [
+            "Sistem mengirimkan instruksi cetak dokumen ke hardware mesin printer.",
+            "Printer mencetak slip yang berisi: ID Transaksi, Nama Kasir, Daftar Belanjaan, Pajak, Total, dan Sapaan Penutup.",
+            "Kasir merobek kertas struk dan menyerahkannya ke pelanggan.",
+          ],
+          exception: [
+            "<strong>Alur 1.a:</strong> Printer offline atau kertas habis. Sistem memunculkan alert 'Printer Error!' dan menawarkan pengiriman struk digital melalui e-mail.",
+          ],
+        },
+        uc05: {
+          id: "UC-05",
+          name: "Berikan Diskon Member (Extend)",
+          actor: "Kasir",
+          desc: "Alur opsional (Ekstensi) yang dipicu ketika pelanggan yang bertransaksi mengonfirmasi kepemilikan kartu keanggotaan (member).",
+          pre: "Kasir sedang memproses transaksi belanja (UC-03).",
+          post: "Diskon 5% dipotong dari total belanja sebelum penyelesaian pembayaran.",
+          main: [
+            "Kasir menanyakan kepemilikan kartu member kepada pelanggan.",
+            "Kasir memindai barcode kartu member milik pelanggan.",
+            "Sistem memvalidasi ID member dan memotong total belanja sebesar 5% secara otomatis.",
+          ],
+          exception: [
+            "<strong>Alur 3.a:</strong> Kartu member kedaluwarsa atau tidak aktif. Sistem mengeluarkan pesan 'Member Tidak Aktif' dan membatalkan pemotongan diskon.",
+          ],
+        },
+        uc06: {
+          id: "UC-06",
+          name: "Melakukan Restock Barang",
+          actor: "Admin Gudang",
+          desc: "Proses memperbarui kuantitas stok barang di gudang yang dibeli dari supplier untuk menghindari kekosongan rak penjualan.",
+          pre: "Admin mendapat notifikasi stok kritis dan barang kiriman supplier tiba.",
+          post: "Jumlah stok barang di database bertambah secara real-time.",
+          main: [
+            "Admin membuka menu 'Restock Inventaris'.",
+            "Admin memindai barcode produk yang datang.",
+            "Admin menginput jumlah barang masuk yang diterima berdasarkan nota fisik supplier.",
+            "Sistem mencatat transaksi restock di tabel log dan menambah kuantitas stok di database.",
+          ],
+          exception: [
+            "<strong>Alur 3.a:</strong> Jumlah barang fisik tidak sesuai nota. Admin membatalkan proses input dan melaporkan ke Manajer.",
+          ],
+        },
+        uc07: {
+          id: "UC-07",
+          name: "Memantau Laporan Keuangan",
+          actor: "Manajer",
+          desc: "Memberikan akses visualisasi data berupa grafik laba rugi, omset penjualan, dan analisis produk terlaris kepada Manajer toko.",
+          pre: "Manajer telah login dan membuka menu 'Dashboard Laporan'.",
+          post: "Laporan berhasil diekspor menjadi dokumen PDF/Excel untuk evaluasi bisnis.",
+          main: [
+            "Manajer memilih rentang tanggal analisis laporan.",
+            "Sistem mengolah seluruh riwayat transaksi di database 'D2 Penjualan'.",
+            "Sistem menampilkan grafik statistik interaktif performa toko.",
+            "Manajer mengunduh laporan penjualan dalam format PDF.",
+          ],
+          exception: [
+            "<strong>Alur 2.a:</strong> Tidak ada transaksi penjualan di tanggal terpilih. Sistem menampilkan grafik kosong dengan pesan 'Tidak ada data untuk periode ini'.",
+          ],
+        },
+      };
+
+      // Posisi Koordinat Awal untuk Reset
+      const defaultPositions = {
+        "actor-kasir": { x: 50, y: 180 },
+        "actor-admin": { x: 810, y: 90 },
+        "actor-manajer": { x: 810, y: 310 },
+        "usecase-login": { x: 410, y: 60 },
+        "usecase-kelola": { x: 410, y: 150 },
+        "usecase-transaksi": { x: 410, y: 240 },
+        "usecase-cetak": { x: 270, y: 350 },
+        "usecase-diskon": { x: 570, y: 350 },
+        "usecase-restock": { x: 410, y: 410 },
+        "usecase-laporan": { x: 410, y: 490 },
+      };
+
+      // Menginisialisasi Sistem Drag and Drop
+      document
+        .querySelectorAll(".actor-box, .usecase-oval")
+        .forEach((element) => {
+          element.addEventListener("mousedown", startDrag);
+          element.addEventListener("touchstart", startDrag, { passive: false });
+
+          // Event klik untuk membuka deskripsi (SOP) di kanan secara otomatis
+          element.addEventListener("click", () => {
+            let id = element.id;
+            if (id.startsWith("usecase-")) {
+              const key = id.replace("usecase-", "");
+              let mapKey = "uc01";
+              if (key === "login") mapKey = "uc01";
+              else if (key === "kelola") mapKey = "uc02";
+              else if (key === "transaksi") mapKey = "uc03";
+              else if (key === "cetak") mapKey = "uc04";
+              else if (key === "diskon") mapKey = "uc05";
+              else if (key === "restock") mapKey = "uc06";
+              else if (key === "laporan") mapKey = "uc07";
+
+              document.getElementById("usecase-selector").value = mapKey;
+              inspectUseCase(mapKey);
+            } else if (id.startsWith("actor-")) {
+              logActorAccess(id.replace("actor-", ""));
+            }
+          });
+        });
+
+      let activeDragNode = null;
+      let startX = 0,
+        startY = 0;
+
+      function startDrag(e) {
+        e.preventDefault();
+        activeDragNode = this;
+
+        const clientX = e.type.startsWith("touch")
+          ? e.touches[0].clientX
+          : e.clientX;
+        const clientY = e.type.startsWith("touch")
+          ? e.touches[0].clientY
+          : e.clientY;
+
+        startX = clientX - activeDragNode.offsetLeft;
+        startY = clientY - activeDragNode.offsetTop;
+
+        document.addEventListener("mousemove", drag);
+        document.addEventListener("touchmove", drag, { passive: false });
+        document.addEventListener("mouseup", stopDrag);
+        document.addEventListener("touchend", stopDrag);
+      }
+
+      function drag(e) {
+        if (!activeDragNode) return;
+        e.preventDefault();
+
+        const clientX = e.type.startsWith("touch")
+          ? e.touches[0].clientX
+          : e.clientX;
+        const clientY = e.type.startsWith("touch")
+          ? e.touches[0].clientY
+          : e.clientY;
+
+        const container = document.getElementById("diagram-capture-area");
+        let newX = clientX - startX;
+        let newY = clientY - startY;
+
+        // Batasi agar tidak terseret keluar kanvas
+        newX = Math.max(
+          0,
+          Math.min(newX, container.offsetWidth - activeDragNode.offsetWidth),
+        );
+        newY = Math.max(
+          0,
+          Math.min(newY, container.offsetHeight - activeDragNode.offsetHeight),
+        );
+
+        activeDragNode.style.left = newX + "px";
+        activeDragNode.style.top = newY + "px";
+
+        drawRelations();
+      }
+
+      function stopDrag() {
+        activeDragNode = null;
+        document.removeEventListener("mousemove", drag);
+        document.removeEventListener("touchmove", drag);
+      }
+
+      // Fungsi menggambar Garis Hubungan (Asosiasi, Include, dan Extend) secara real-time
+      function drawRelations() {
+        const svg = document.getElementById("relation-svg");
+
+        // Bersihkan jalur lama
+        const oldLines = svg.querySelectorAll("path, text");
+        oldLines.forEach((l) => l.remove());
+
+        // 1. Hubungan Asosiasi (Aktor ke Use Case) - Solid Line
+        const associations = [
+          { actor: "actor-kasir", usecase: "usecase-login" },
+          { actor: "actor-kasir", usecase: "usecase-transaksi" },
+
+          { actor: "actor-admin", usecase: "usecase-login" },
+          { actor: "actor-admin", usecase: "usecase-kelola" },
+          { actor: "actor-admin", usecase: "usecase-restock" },
+
+          { actor: "actor-manajer", usecase: "usecase-login" },
+          { actor: "actor-manajer", usecase: "usecase-laporan" },
+        ];
+
+        associations.forEach((assoc) => {
+          drawArrow(assoc.actor, assoc.usecase, false, "solid");
+        });
+
+        // 2. Hubungan Dependensi UML (Include dan Extend) - Dashed Line dengan Teks Label
+        const dependencies = [
+          {
+            from: "usecase-transaksi",
+            to: "usecase-cetak",
+            label: "<<include>>",
+            type: "dashed",
+          },
+          {
+            from: "usecase-diskon",
+            to: "usecase-transaksi",
+            label: "<<extend>>",
+            type: "dashed",
+          },
+        ];
+
+        dependencies.forEach((dep) => {
+          drawArrow(dep.from, dep.to, dep.label, dep.type);
+        });
+      }
+
+      function drawArrow(fromId, toId, label, type) {
+        const elFrom = document.getElementById(fromId);
+        const elTo = document.getElementById(toId);
+        const svg = document.getElementById("relation-svg");
+
+        if (!elFrom || !elTo) return;
+
+        // Hitung titik tengah elemen asal dan tujuan
+        const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
+        const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
+        const x2 = elTo.offsetLeft + elTo.offsetWidth / 2;
+        const y2 = elTo.offsetTop + elTo.offsetHeight / 2;
+
+        const path = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        path.setAttribute("d", `M ${x1} ${y1} L ${x2} ${y2}`);
+
+        if (type === "solid") {
+          path.setAttribute("stroke", "#475569"); // Solid Slate
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("marker-end", "url(#arrow-solid)");
+        } else {
+          path.setAttribute("stroke", "#a78bfa"); // Dotted Violet
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("stroke-dasharray", "5,5");
+          path.setAttribute("marker-end", "url(#arrow-dashed)");
+        }
+
+        svg.appendChild(path);
+
+        // Tambahkan Label Dependensi (seperti <<include>> atau <<extend>>) di tengah garis
+        if (label) {
+          const text = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          const midX = (x1 + x2) / 2;
+          const midY = (y1 + y2) / 2 - 8;
+          text.setAttribute("x", midX);
+          text.setAttribute("y", midY);
+          text.setAttribute("fill", "#a78bfa");
+          text.setAttribute("font-size", "10px");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("class", "font-bold font-mono select-none");
+          text.textContent = label;
+          svg.appendChild(text);
+        }
+      }
+
+      // Inspeksi detail Use Case Description (SOP)
+      function inspectUseCase(key) {
+        const data = useCaseDatabase[key];
+        if (!data) return;
+
+        const container = document.getElementById("sop-document-container");
+
+        // Format HTML Dokumen SOP Profesional
+        let htmlContent = `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                        <span class="text-violet-400 font-mono font-bold">${data.id}</span>
+                        <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">Use Case Desc</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-white mb-1">${data.name}</h4>
+                    <p class="text-slate-400 text-[11px] leading-relaxed mb-3">${data.desc}</p>
+                    
+                    <div class="grid grid-cols-1 gap-2 border-t border-slate-800/60 pt-3">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-500">Aktor Utama:</span>
+                            <p class="text-slate-300 font-semibold mt-0.5">${data.actor}</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-500">Prasyarat (Pre-Condition):</span>
+                            <p class="text-slate-300 mt-0.5">${data.pre}</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-500">Kondisi Akhir (Post-Condition):</span>
+                            <p class="text-slate-300 mt-0.5">${data.post}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Sukses Utama (Main Flow):</h5>
+                    <ol class="list-decimal pl-4 space-y-1.5 text-slate-300">
+            `;
+
+        data.main.forEach((step) => {
+          htmlContent += `<li>${step}</li>`;
+        });
+
+        htmlContent += `
+                    </ol>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Alternatif & Eror (Exception Flow):</h5>
+                    <div class="space-y-2 text-slate-400 leading-relaxed">
+            `;
+
+        data.exception.forEach((exc) => {
+          htmlContent += `<p class="border-l-2 border-rose-500/40 pl-2 py-0.5 bg-rose-500/[0.02]">${exc}</p>`;
+        });
+
+        htmlContent += `
+                    </div>
+                </div>
+            `;
+
+        container.innerHTML = htmlContent;
+
+        // Efek glow visual pada elemen oval use case yang aktif di kanvas
+        document.querySelectorAll(".usecase-oval").forEach((oval) => {
+          oval.classList.remove(
+            "ring-4",
+            "ring-violet-500/50",
+            "border-violet-300",
+          );
+        });
+
+        let canvasId = "usecase-login";
+        if (key === "uc02") canvasId = "usecase-kelola";
+        else if (key === "uc03") canvasId = "usecase-transaksi";
+        else if (key === "uc04") canvasId = "usecase-cetak";
+        else if (key === "uc05") canvasId = "usecase-diskon";
+        else if (key === "uc06") canvasId = "usecase-restock";
+        else if (key === "uc07") canvasId = "usecase-laporan";
+
+        const activeOval = document.getElementById(canvasId);
+        if (activeOval) {
+          activeOval.classList.add(
+            "ring-4",
+            "ring-violet-500/50",
+            "border-violet-300",
+          );
+        }
+      }
+
+      // Fungsi log info saat aktor di-klik
+      function logActorAccess(role) {
+        const container = document.getElementById("sop-document-container");
+        let infoText = "";
+        let color = "text-emerald-400";
+        let desc = "";
+
+        if (role === "kasir") {
+          color = "text-emerald-400";
+          desc =
+            "Pengguna di baris depan transaksi penjualan. Kasir memiliki otoritas penuh untuk memproses keranjang belanja, memindai barcode belanjaan, menerima uang pembayaran, mengonfirmasi data member, dan mencetak slip tanda terima.";
+        } else if (role === "admin") {
+          color = "text-sky-400";
+          desc =
+            "Pengelola database pergudangan dan persediaan. Admin bertanggung jawab mengonfirmasi kiriman restock dari supplier, menginput inventaris baru ke database utama, serta mendeteksi log peringatan stok kritis.";
+        } else if (role === "manajer") {
+          color = "text-rose-400";
+          desc =
+            "Pemegang otorisasi bisnis tingkat atas. Manajer dapat memantau log perolehan omset penjualan harian, memeriksa data grafik laba-rugi, dan mengekspor dokumen laporan final PDF.";
+        }
+
+        container.innerHTML = `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-bold text-slate-500">Profil Aktor</span>
+                    <h4 class="text-sm font-bold ${color} mt-1 mb-2 uppercase">${role.toUpperCase()}</h4>
+                    <p class="text-slate-300 leading-relaxed">${desc}</p>
+                </div>
+                <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-800/60 border-dashed text-slate-400 text-center">
+                    Klik salah satu lingkaran Use Case di kiri untuk melihat dokumentasi fungsional sistem secara mendalam.
+                </div>
+            `;
+      }
+
+      // Reset Posisi Elemen
+      function resetElements() {
+        for (const [id, pos] of Object.entries(defaultPositions)) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.left = pos.x + "px";
+            el.style.top = pos.y + "px";
+          }
+        }
+        drawRelations();
+      }
+
+      // Ekspor Gambar (PNG) Tanpa Terpotong
+      function exportDiagram() {
+        const targetElement = document.getElementById("diagram-capture-area");
+
+        // Clone element untuk menghilangkan batas overflow / scroll saat penangkapan layar
+        const clone = targetElement.cloneNode(true);
+        clone.style.width = "1000px";
+        clone.style.height = "600px";
+        clone.style.overflow = "visible";
+        clone.style.position = "absolute";
+        clone.style.top = "-9999px";
+        clone.style.left = "-9999px";
+        document.body.appendChild(clone);
+
+        const options = {
+          backgroundColor: "#0a0f1d",
+          scale: 2, // Kualitas HD agar tulisan diagram tajam
+          logging: false,
+          useCORS: true,
+          width: 1000,
+          height: 600,
+        };
+
+        html2canvas(clone, options)
+          .then((canvas) => {
+            const image = canvas.toDataURL("image/png", 1.0);
+            const link = document.createElement("a");
+            link.download = `UseCase_Diagram_Raffi.png`;
+            link.href = image;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            document.body.removeChild(clone);
+          })
+          .catch((err) => {
+            if (document.body.contains(clone)) {
+              document.body.removeChild(clone);
+            }
+            alert("Gagal mengekspor diagram: " + err);
+          });
+      }
+
+      // Inisialisasi awal aplikasi
+      window.onload = () => {
+        drawRelations();
+        inspectUseCase("uc01");
+
+        // Set-up observer untuk resizing kanvas agar garis relasi tetap presisi
+        const canvasContainer = document.getElementById(
+          "diagram-canvas-container",
+        );
+        if (canvasContainer) {
+          const resizeObserver = new ResizeObserver(() => {
+            drawRelations();
+          });
+          resizeObserver.observe(canvasContainer);
+        }
+      };
+
+      window.onresize = drawRelations;
+    </script>
+  </body>
+</html>
