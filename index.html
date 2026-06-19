@@ -121,7 +121,7 @@
               APSI UML Workspace
               <span
                 class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20"
-                >Sesi 11 & 12</span
+                >Sesi 9 & 10</span
               >
             </h1>
             <p class="text-xs text-slate-400">
@@ -450,122 +450,141 @@
 
             <div
               id="activity-capture-area"
-              class="flex-1 w-full h-full relative bg-[#0a0f1d] overflow-auto flex"
+              class="flex-1 w-full h-full relative bg-[#0a0f1d] overflow-auto min-h-[820px] select-none"
             >
-              <!-- Swimlane 1: KASIR -->
+              <!-- Batas Garis Tengah Swimlane -->
               <div
-                class="flex-1 border-r border-slate-800 flex flex-col items-center pt-8 relative min-w-[320px]"
+                class="absolute inset-y-0 left-1/2 w-px bg-slate-800 z-10 pointer-events-none"
+              ></div>
+
+              <!-- Judul Swimlane 1: KASIR -->
+              <div
+                class="absolute top-4 left-4 bg-emerald-500/10 text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
               >
-                <div
-                  class="absolute top-2 left-4 bg-emerald-500/10 text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-bold tracking-widest uppercase"
-                >
-                  KASIR
-                </div>
+                KASIR (Aktor)
+              </div>
 
-                <!-- Initial Node -->
-                <div
-                  id="act-start"
-                  class="w-6 h-6 bg-slate-100 rounded-full border-2 border-slate-800 shadow-lg relative mb-12"
-                ></div>
+              <!-- Judul Swimlane 2: SISTEM -->
+              <div
+                class="absolute top-4 left-[calc(50%+16px)] bg-sky-500/10 text-sky-400 px-3 py-0.5 rounded-full border border-sky-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
+              >
+                SISTEM (Aplikasi)
+              </div>
 
-                <!-- Act 1: Memulai Menu Kasir -->
-                <div
-                  id="act-node-1"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
-                >
-                  Membuka Menu Penjualan
-                </div>
+              <!-- === ELEMEN SWIMLANE KASIR === -->
+              <!-- Initial Node (Mulai) -->
+              <div
+                id="act-start"
+                class="absolute w-6 h-6 bg-slate-100 rounded-full border-2 border-slate-800 shadow-lg z-20"
+                style="left: calc(25% - 12px); top: 60px"
+              ></div>
 
-                <!-- Act 2: Scan Barcode Produk -->
-                <div
-                  id="act-node-2"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-28"
-                >
-                  Memindai Barcode Produk
-                </div>
+              <!-- Akt 1: Buka Menu -->
+              <div
+                id="act-node-1"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(25% - 104px); top: 120px"
+              >
+                Membuka Menu Penjualan
+              </div>
 
-                <!-- Act 4: Menerima Input Pembayaran -->
-                <div
-                  id="act-node-5"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-16"
-                >
-                  Menerima Pembayaran (Tunai/QRIS)
+              <!-- Akt 2: Scan Barcode -->
+              <div
+                id="act-node-2"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(25% - 104px); top: 200px"
+              >
+                Memindai Barcode Produk
+              </div>
+
+              <!-- Akt 3b: Notifikasi Error (Terstruktur lurus dengan Decision Node di kanan) -->
+              <div
+                id="act-node-err"
+                class="activity-node absolute border border-rose-500 bg-rose-950/20 px-4 py-2.5 text-xs w-52 text-center text-rose-300 font-bold shadow-md z-20"
+                style="left: calc(25% - 104px); top: 350px"
+              >
+                Tampilkan: Stok Kosong
+              </div>
+
+              <!-- End Error Node -->
+              <div
+                id="act-end-err"
+                class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-rose-500 flex items-center justify-center shadow-lg z-20"
+                style="left: calc(25% - 14px); top: 440px"
+              >
+                <div class="w-4 h-4 bg-rose-500 rounded-full"></div>
+              </div>
+
+              <!-- Akt 5: Input Pembayaran -->
+              <div
+                id="act-node-5"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(25% - 104px); top: 510px"
+              >
+                Menerima Pembayaran (Tunai/QRIS)
+              </div>
+
+              <!-- === ELEMEN SWIMLANE SISTEM === -->
+              <!-- Akt 3: Validasi database -->
+              <div
+                id="act-node-3"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(75% - 104px); top: 200px"
+              >
+                Mencari Data Barang & Cek Stok
+              </div>
+
+              <!-- Decision Node (Stok Ada?) -->
+              <div
+                id="act-dec-1"
+                class="absolute w-10 h-10 border-2 border-amber-500 bg-amber-950/20 rotate-45 flex items-center justify-center shadow-lg z-20"
+                style="left: calc(75% - 20px); top: 280px"
+              >
+                <div class="-rotate-45 text-[10px] font-bold text-amber-400">
+                  ?
                 </div>
               </div>
 
-              <!-- Swimlane 2: SISTEM -->
+              <!-- Akt 4: Hitung Total -->
               <div
-                class="flex-1 flex flex-col items-center pt-16 relative min-w-[320px]"
+                id="act-node-4"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(75% - 104px); top: 350px"
               >
-                <div
-                  class="absolute top-2 left-4 bg-sky-500/10 text-sky-400 px-3 py-0.5 rounded-full border border-sky-500/20 text-[10px] font-bold tracking-widest uppercase"
-                >
-                  SISTEM
-                </div>
+                Hitung Total & Tambah PPN 11%
+              </div>
 
-                <!-- Act 3: Validasi Stok di Database -->
-                <div
-                  id="act-node-3"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
-                >
-                  Mencari Data Barang & Cek Stok
-                </div>
+              <!-- Akt 6: Kurangi database -->
+              <div
+                id="act-node-6"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(75% - 104px); top: 580px"
+              >
+                Kurangi Stok & Simpan Transaksi
+              </div>
 
-                <!-- Decision Node: Stok Ada? -->
-                <div
-                  id="act-dec-1"
-                  class="w-10 h-10 border-2 border-amber-500 bg-amber-950/20 rotate-45 flex items-center justify-center mb-10 shadow-lg relative"
-                >
-                  <div class="-rotate-45 text-[9px] font-bold text-amber-400">
-                    ?
-                  </div>
-                </div>
+              <!-- Akt 7: Cetak struk -->
+              <div
+                id="act-node-7"
+                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                style="left: calc(75% - 104px); top: 660px"
+              >
+                Cetak Struk Bukti Bayar
+              </div>
 
-                <!-- Act 3b: Notifikasi error -->
-                <div
-                  id="act-node-err"
-                  class="activity-node border-2 border-rose-600 bg-rose-950/20 px-4 py-2 text-xs w-48 text-center text-rose-300 font-bold mb-12 absolute left-4 top-[290px]"
-                >
-                  Tampilkan: Stok Kosong
-                </div>
-
-                <!-- Act 4: Hitung Total Belanja -->
-                <div
-                  id="act-node-4"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-20"
-                >
-                  Hitung Total & Tambah PPN 11%
-                </div>
-
-                <!-- Act 5: Update database & inventory -->
-                <div
-                  id="act-node-6"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
-                >
-                  Kurangi Stok & Simpan Transaksi
-                </div>
-
-                <!-- Act 6: Cetak struk belanja -->
-                <div
-                  id="act-node-7"
-                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
-                >
-                  Cetak Struk Bukti Bayar
-                </div>
-
-                <!-- Final State -->
-                <div
-                  id="act-end"
-                  class="w-7 h-7 bg-slate-900 rounded-full border-2 border-slate-100 flex items-center justify-center shadow-lg relative"
-                >
-                  <div class="w-4 h-4 bg-slate-100 rounded-full"></div>
-                </div>
+              <!-- Final Node (Selesai) -->
+              <div
+                id="act-end"
+                class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-slate-100 flex items-center justify-center shadow-lg z-20"
+                style="left: calc(75% - 14px); top: 740px"
+              >
+                <div class="w-4 h-4 bg-slate-100 rounded-full"></div>
               </div>
 
               <!-- SVG Overlay untuk Aliran Panah di Activity Diagram -->
               <svg
                 id="activity-svg"
-                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[640px] min-h-[780px]"
+                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[800px] min-h-[820px]"
               >
                 <defs>
                   <marker
@@ -577,7 +596,7 @@
                     markerHeight="6"
                     orient="auto-start-reverse"
                   >
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
                   </marker>
                   <marker
                     id="arrow-act-active"
@@ -1218,6 +1237,7 @@
           { from: "act-node-2", to: "act-node-3" },
           { from: "act-node-3", to: "act-dec-1" },
           { from: "act-dec-1", to: "act-node-err", label: "Kosong" },
+          { from: "act-node-err", to: "act-end-err" },
           { from: "act-dec-1", to: "act-node-4", label: "Tersedia" },
           { from: "act-node-4", to: "act-node-5" },
           { from: "act-node-5", to: "act-node-6" },
@@ -1233,18 +1253,19 @@
       function drawActivityArrow(svg, fromId, toId, label) {
         const elFrom = document.getElementById(fromId);
         const elTo = document.getElementById(toId);
+        const container = document.getElementById("activity-capture-area");
 
-        if (!elFrom || !elTo) return;
+        if (!elFrom || !elTo || !container) return;
 
-        // Koordinat
-        const x1 =
-          elFrom.parentNode.offsetLeft +
-          elFrom.offsetLeft +
-          elFrom.offsetWidth / 2;
+        // Seluruh elemen diposisikan absolut langsung di dalam `activity-capture-area`
+        // Sehingga koordinatnya sangat sederhana & bebas overlap
+        const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
         const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
-        const x2 =
-          elTo.parentNode.offsetLeft + elTo.offsetLeft + elTo.offsetWidth / 2;
+        const x2 = elTo.offsetLeft + elTo.offsetWidth / 2;
         const y2 = elTo.offsetTop + elTo.offsetHeight / 2;
+
+        const fromBottom = elFrom.offsetTop + elFrom.offsetHeight;
+        const toTop = elTo.offsetTop;
 
         const path = document.createElementNS(
           "http://www.w3.org/2000/svg",
@@ -1253,15 +1274,24 @@
         path.setAttribute("class", "act-flow-line");
         path.setAttribute("id", `flow-${fromId}-${toId}`);
 
-        // Aturan belokan patah jika antar Swimlane berbeda
-        if (elFrom.parentNode !== elTo.parentNode) {
-          // Aliran Horizontal-Vertikal Sederhana
-          const midX = (x1 + x2) / 2;
-          path.setAttribute("d", `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`);
+        let d = "";
+
+        // Logika penggambaran garis siku-siku (Orthogonal) yang rapi
+        if (Math.abs(x1 - x2) < 30) {
+          // Jalur lurus vertikal searah
+          d = `M ${x1} ${fromBottom} L ${x2} ${toTop}`;
         } else {
-          path.setAttribute("d", `M ${x1} ${y1} L ${x2} ${y2}`);
+          // Jalur belok pindah swimlane
+          if (toTop > fromBottom) {
+            const midY = (fromBottom + toTop) / 2;
+            d = `M ${x1} ${fromBottom} V ${midY} H ${x2} V ${toTop}`;
+          } else {
+            // Jalur horizontal horizontal sejajar (Decision ke Error Node)
+            d = `M ${x1} ${y1} H ${x2}`;
+          }
         }
 
+        path.setAttribute("d", d);
         path.setAttribute("stroke", "#475569");
         path.setAttribute("stroke-width", "2");
         path.setAttribute("fill", "none");
@@ -1273,15 +1303,23 @@
             "http://www.w3.org/2000/svg",
             "text",
           );
-          const midX =
-            (x1 + x2) / 2 +
-            (fromId === "act-dec-1" && toId === "act-node-err" ? -35 : 10);
-          const midY = (y1 + y2) / 2 - 5;
-          text.setAttribute("x", midX);
-          text.setAttribute("y", midY);
+          let lx = (x1 + x2) / 2;
+          let ly = (fromBottom + toTop) / 2 - 5;
+
+          if (Math.abs(x1 - x2) < 30) {
+            lx = x1 + 10;
+            ly = (fromBottom + toTop) / 2;
+          } else if (fromId === "act-dec-1" && toId === "act-node-err") {
+            lx = (x1 + x2) / 2;
+            ly = y1 - 8;
+          }
+
+          text.setAttribute("x", lx);
+          text.setAttribute("y", ly);
           text.setAttribute("fill", "#f59e0b");
           text.setAttribute("font-size", "10px");
-          text.setAttribute("class", "font-bold font-mono");
+          text.setAttribute("class", "font-bold font-mono select-none");
+          text.setAttribute("text-anchor", "middle");
           text.textContent = label;
           svg.appendChild(text);
         }
@@ -1323,6 +1361,11 @@
           step: "05.a",
           title: "Sistem: Notifikasi Stok Habis",
           desc: "Sistem menampilkan alert kesalahan berwarna merah di layar kasir untuk mengindikasikan barang tidak dapat dimasukkan ke keranjang belanja.",
+        },
+        "act-end-err": {
+          step: "05.b",
+          title: "SOP Selesai (Eror)",
+          desc: "Alur transaksi dihentikan karena produk yang dipindai tidak memiliki persediaan fisik di rak minimarket.",
         },
         "act-node-4": {
           step: "06",
@@ -1380,7 +1423,9 @@
 
         // Kembalikan semua node ke warna semula
         document
-          .querySelectorAll(".activity-node, #act-start, #act-end, #act-dec-1")
+          .querySelectorAll(
+            ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
+          )
           .forEach((node) => {
             node.classList.remove("active-token");
             node.style.borderColor = "";
@@ -1405,7 +1450,7 @@
             // Matikan highlight sebelumnya
             document
               .querySelectorAll(
-                ".activity-node, #act-start, #act-end, #act-dec-1",
+                ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
               )
               .forEach((node) => {
                 node.classList.remove("active-token");
