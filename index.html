@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generator Use Case Diagram Interaktif - Moh. Raffi Alfatih</title>
+    <title>UML Diagram & Specification Tool - Moh. Raffi Alfatih</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- html2canvas untuk Ekspor PNG -->
@@ -36,7 +36,7 @@
           );
       }
 
-      /* Gaya interaktif untuk elemen Use Case */
+      /* Gaya interaktif untuk elemen Use Case & Activity Diagram */
       .usecase-oval {
         border-radius: 50% / 50%;
         cursor: grab;
@@ -48,6 +48,18 @@
 
       .usecase-oval:active {
         cursor: grabbing;
+        transform: scale(1.05);
+      }
+
+      .activity-node {
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .activity-node.active-token {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+        border-color: #a78bfa !important;
+        background-color: #1e1b4b !important;
         transform: scale(1.05);
       }
 
@@ -106,22 +118,39 @@
           </div>
           <div>
             <h1 class="text-lg font-bold text-white flex items-center gap-2">
-              Interactive Use Case Diagram & Use Case Description
+              APSI UML Workspace
               <span
                 class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20"
-                >APSI Sesi 11</span
+                >Sesi 11 & 12</span
               >
             </h1>
             <p class="text-xs text-slate-400">
-              Tugas Praktis: Moh. Raffi Alfatih (NIM: 20240040066)
+              Penyusun: Moh. Raffi Alfatih (NIM: 20240040066)
             </p>
           </div>
         </div>
 
-        <div class="flex gap-2 w-full md:w-auto">
+        <!-- Tab Switcher & Download -->
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+          <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex">
+            <button
+              onclick="switchTab('usecase')"
+              id="tab-usecase"
+              class="px-3 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white"
+            >
+              Use Case Diagram
+            </button>
+            <button
+              onclick="switchTab('activity')"
+              id="tab-activity"
+              class="px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white"
+            >
+              Activity Diagram
+            </button>
+          </div>
           <button
-            onclick="exportDiagram()"
-            class="flex-1 md:flex-initial flex items-center justify-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold px-4 py-2 rounded-lg transition shadow-md shadow-violet-500/10"
+            onclick="exportActiveDiagram()"
+            class="flex items-center justify-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold px-4 py-2 rounded-lg transition shadow-md shadow-violet-500/10"
           >
             <svg
               class="w-4 h-4"
@@ -136,11 +165,11 @@
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
               ></path>
             </svg>
-            Unduh Diagram (PNG)
+            Unduh PNG
           </button>
           <button
             onclick="resetElements()"
-            class="flex-1 md:flex-initial text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg border border-slate-700 transition"
+            class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg border border-slate-700 transition"
           >
             Reset Posisi
           </button>
@@ -152,267 +181,417 @@
     <main
       class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col lg:flex-row gap-6 items-stretch"
     >
-      <!-- Kolom Kiri: Kanvas Use Case Diagram -->
+      <!-- KOLOM KIRI: AREA KANVAS DIAGRAM -->
       <section class="flex-1 flex flex-col gap-4 min-w-0">
         <div
           id="diagram-canvas-container"
           class="bg-slate-950 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col relative h-[650px] w-full max-w-full"
           style="resize: both"
         >
-          <!-- Sub Header Kanvas -->
-          <div
-            class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
-          >
-            <div class="flex items-center gap-2">
-              <span
-                class="w-2.5 h-2.5 rounded-full bg-violet-500 animate-pulse"
-              ></span>
-              <span
-                class="text-xs font-semibold uppercase tracking-wider text-slate-400"
-                >Kanvas Diagram (Klik use case/aktor untuk melihat deskripsi
-                SOP)</span
-              >
-            </div>
-            <div class="text-[10px] text-slate-500 flex gap-3">
-              <span>Solid = Asosiasi</span>
-              <span>Dotted = Include/Extend</span>
-            </div>
-          </div>
-
-          <!-- Capture Target Area -->
-          <div
-            id="diagram-capture-area"
-            class="flex-1 w-full h-full relative grid-bg overflow-auto bg-[#0a0f1d] p-4"
-          >
-            <!-- SVG Overlay untuk Menggambar Garis Relasi -->
-            <svg
-              id="relation-svg"
-              class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[1000px] min-h-[600px]"
-            >
-              <defs>
-                <!-- Marker Panah Solid (Asosiasi) -->
-                <marker
-                  id="arrow-solid"
-                  viewBox="0 0 10 10"
-                  refX="8"
-                  refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
-                  orient="auto-start-reverse"
-                >
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
-                </marker>
-                <!-- Marker Panah Putus-putus (Include/Extend) -->
-                <marker
-                  id="arrow-dashed"
-                  viewBox="0 0 10 10"
-                  refX="8"
-                  refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
-                  orient="auto-start-reverse"
-                >
-                  <path d="M 0 2 L 10 5 L 0 8 z" fill="#a78bfa" />
-                </marker>
-              </defs>
-            </svg>
-
-            <!-- SYSTEM BOUNDARY BOX (Sistem Toko Retail) -->
+          <!-- USE CASE CANVAS VIEW -->
+          <div id="usecase-canvas-view" class="flex-1 flex flex-col h-full">
             <div
-              id="system-boundary"
-              class="absolute border-2 border-dashed border-slate-700/60 rounded-3xl bg-slate-950/10 pointer-events-none"
-              style="left: 230px; top: 30px; width: 540px; height: 530px"
+              class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
             >
-              <div
-                class="absolute -top-3 left-6 bg-[#0a0f1d] px-3 py-0.5 border border-slate-800 rounded-full text-[10px] font-bold tracking-widest text-slate-400"
-              >
-                BATAS SISTEM: MINI MARKET POS & INVENTORY
+              <div class="flex items-center gap-2">
+                <span
+                  class="w-2.5 h-2.5 rounded-full bg-violet-500 animate-pulse"
+                ></span>
+                <span
+                  class="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                  >Use Case Diagram (Silakan Geser Elemen)</span
+                >
+              </div>
+              <div class="text-[10px] text-slate-500 flex gap-3">
+                <span>Solid = Asosiasi</span>
+                <span>Dotted = Include/Extend</span>
               </div>
             </div>
 
-            <!-- ================= AKTOR-AKTOR ================= -->
-
-            <!-- AKTOR 1: KASIR (Kiri) -->
             <div
-              id="actor-kasir"
-              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
-              style="left: 50px; top: 180px"
-            >
-              <!-- Stick-man SVG Drawing -->
-              <svg
-                class="w-12 h-20 text-emerald-400"
-                viewBox="0 0 100 100"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="4"
-              >
-                <circle cx="50" cy="20" r="15" />
-                <!-- Kepala -->
-                <line x1="50" y1="35" x2="50" y2="70" />
-                <!-- Tubuh -->
-                <line x1="50" y1="45" x2="20" y2="35" />
-                <!-- Tangan Kiri -->
-                <line x1="50" y1="45" x2="80" y2="35" />
-                <!-- Tangan Kanan -->
-                <line x1="50" y1="70" x2="25" y2="95" />
-                <!-- Kaki Kiri -->
-                <line x1="50" y1="70" x2="75" y2="95" />
-                <!-- Kaki Kanan -->
-              </svg>
-              <span class="text-xs font-bold text-emerald-300 mt-1 select-none"
-                >KASIR</span
-              >
-            </div>
-
-            <!-- AKTOR 2: ADMIN GUDANG (Kanan Atas) -->
-            <div
-              id="actor-admin"
-              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
-              style="left: 810px; top: 90px"
+              id="usecase-capture-area"
+              class="flex-1 w-full h-full relative grid-bg overflow-auto bg-[#0a0f1d] p-4"
             >
               <svg
-                class="w-12 h-20 text-sky-400"
-                viewBox="0 0 100 100"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="4"
+                id="usecase-svg"
+                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[1000px] min-h-[600px]"
               >
-                <circle cx="50" cy="20" r="15" />
-                <line x1="50" y1="35" x2="50" y2="70" />
-                <line x1="50" y1="45" x2="20" y2="35" />
-                <line x1="50" y1="45" x2="80" y2="35" />
-                <line x1="50" y1="70" x2="25" y2="95" />
-                <line x1="50" y1="70" x2="75" y2="95" />
+                <defs>
+                  <marker
+                    id="arrow-solid"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+                  </marker>
+                  <marker
+                    id="arrow-dashed"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 2 L 10 5 L 0 8 z" fill="#a78bfa" />
+                  </marker>
+                </defs>
               </svg>
-              <span
-                class="text-xs font-bold text-sky-300 mt-1 select-none text-center leading-tight"
-                >ADMIN GUDANG</span
+
+              <!-- System Boundary -->
+              <div
+                class="absolute border-2 border-dashed border-slate-700/60 rounded-3xl bg-slate-950/10 pointer-events-none"
+                style="left: 230px; top: 30px; width: 540px; height: 530px"
               >
+                <div
+                  class="absolute -top-3 left-6 bg-[#0a0f1d] px-3 py-0.5 border border-slate-800 rounded-full text-[10px] font-bold tracking-widest text-slate-400"
+                >
+                  BATAS SISTEM: MINI MARKET POS & INVENTORY
+                </div>
+              </div>
+
+              <!-- Aktor -->
+              <div
+                id="actor-kasir"
+                class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+                style="left: 50px; top: 180px"
+              >
+                <svg
+                  class="w-12 h-20 text-emerald-400"
+                  viewBox="0 0 100 100"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                >
+                  <circle cx="50" cy="20" r="15" />
+                  <line x1="50" y1="35" x2="50" y2="70" />
+                  <line x1="50" y1="45" x2="20" y2="35" />
+                  <line x1="50" y1="45" x2="80" y2="35" />
+                  <line x1="50" y1="70" x2="25" y2="95" />
+                  <line x1="50" y1="70" x2="75" y2="95" />
+                </svg>
+                <span
+                  class="text-xs font-bold text-emerald-300 mt-1 select-none"
+                  >KASIR</span
+                >
+              </div>
+
+              <div
+                id="actor-admin"
+                class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+                style="left: 810px; top: 90px"
+              >
+                <svg
+                  class="w-12 h-20 text-sky-400"
+                  viewBox="0 0 100 100"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                >
+                  <circle cx="50" cy="20" r="15" />
+                  <line x1="50" y1="35" x2="50" y2="70" />
+                  <line x1="50" y1="45" x2="20" y2="35" />
+                  <line x1="50" y1="45" x2="80" y2="35" />
+                  <line x1="50" y1="70" x2="25" y2="95" />
+                  <line x1="50" y1="70" x2="75" y2="95" />
+                </svg>
+                <span
+                  class="text-xs font-bold text-sky-300 mt-1 select-none text-center leading-tight"
+                  >ADMIN GUDANG</span
+                >
+              </div>
+
+              <div
+                id="actor-manajer"
+                class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
+                style="left: 810px; top: 310px"
+              >
+                <svg
+                  class="w-12 h-20 text-rose-400"
+                  viewBox="0 0 100 100"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                >
+                  <circle cx="50" cy="20" r="15" />
+                  <line x1="50" y1="35" x2="50" y2="70" />
+                  <line x1="50" y1="45" x2="20" y2="35" />
+                  <line x1="50" y1="45" x2="80" y2="35" />
+                  <line x1="50" y1="70" x2="25" y2="95" />
+                  <line x1="50" y1="70" x2="75" y2="95" />
+                </svg>
+                <span class="text-xs font-bold text-rose-300 mt-1 select-none"
+                  >MANAJER</span
+                >
+              </div>
+
+              <!-- Use Cases -->
+              <div
+                id="usecase-login"
+                class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 410px; top: 60px"
+              >
+                <span class="text-[9px] font-bold text-violet-400 font-mono"
+                  >UC-01</span
+                >
+                <span class="text-[11px] font-extrabold leading-tight"
+                  >Login Multi-User</span
+                >
+              </div>
+
+              <div
+                id="usecase-kelola"
+                class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 410px; top: 150px"
+              >
+                <span class="text-[9px] font-bold text-violet-400 font-mono"
+                  >UC-02</span
+                >
+                <span class="text-[11px] font-extrabold leading-tight"
+                  >Kelola Data Barang</span
+                >
+              </div>
+
+              <div
+                id="usecase-transaksi"
+                class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 410px; top: 240px"
+              >
+                <span class="text-[9px] font-bold text-violet-400 font-mono"
+                  >UC-03</span
+                >
+                <span class="text-[11px] font-extrabold leading-tight"
+                  >Memproses Penjualan</span
+                >
+              </div>
+
+              <div
+                id="usecase-cetak"
+                class="usecase-oval absolute border-2 border-amber-500 bg-slate-900/90 text-amber-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 270px; top: 350px"
+              >
+                <span class="text-[9px] font-bold text-amber-400 font-mono"
+                  >UC-04</span
+                >
+                <span class="text-[10px] font-extrabold leading-tight"
+                  >Cetak Struk Belanja</span
+                >
+              </div>
+
+              <div
+                id="usecase-diskon"
+                class="usecase-oval absolute border-2 border-fuchsia-500 bg-slate-900/90 text-fuchsia-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 570px; top: 350px"
+              >
+                <span class="text-[9px] font-bold text-fuchsia-400 font-mono"
+                  >UC-05</span
+                >
+                <span class="text-[10px] font-extrabold leading-tight"
+                  >Berikan Diskon Member</span
+                >
+              </div>
+
+              <div
+                id="usecase-restock"
+                class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 410px; top: 410px"
+              >
+                <span class="text-[9px] font-bold text-violet-400 font-mono"
+                  >UC-06</span
+                >
+                <span class="text-[11px] font-extrabold leading-tight"
+                  >Melakukan Restock</span
+                >
+              </div>
+
+              <div
+                id="usecase-laporan"
+                class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
+                style="left: 410px; top: 490px"
+              >
+                <span class="text-[9px] font-bold text-violet-400 font-mono"
+                  >UC-07</span
+                >
+                <span class="text-[11px] font-extrabold leading-tight"
+                  >Memantau Laporan</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIVITY DIAGRAM CANVAS VIEW (Hidden by default) -->
+          <div
+            id="activity-canvas-view"
+            class="flex-1 flex flex-col h-full hidden"
+          >
+            <div
+              class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
+            >
+              <div class="flex items-center gap-3">
+                <span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+                ></span>
+                <span
+                  class="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                  >Activity Diagram (Alur Proses Transaksi Penjualan)</span
+                >
+              </div>
+              <button
+                onclick="startActivitySimulation()"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1 text-xs rounded-lg transition shadow-md flex items-center gap-1"
+              >
+                ▶ Simulasikan Alur
+              </button>
             </div>
 
-            <!-- AKTOR 3: MANAJER (Kanan Bawah) -->
             <div
-              id="actor-manajer"
-              class="actor-box absolute flex flex-col items-center justify-center p-2 z-20"
-              style="left: 810px; top: 310px"
+              id="activity-capture-area"
+              class="flex-1 w-full h-full relative bg-[#0a0f1d] overflow-auto flex"
             >
+              <!-- Swimlane 1: KASIR -->
+              <div
+                class="flex-1 border-r border-slate-800 flex flex-col items-center pt-8 relative min-w-[320px]"
+              >
+                <div
+                  class="absolute top-2 left-4 bg-emerald-500/10 text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-bold tracking-widest uppercase"
+                >
+                  KASIR
+                </div>
+
+                <!-- Initial Node -->
+                <div
+                  id="act-start"
+                  class="w-6 h-6 bg-slate-100 rounded-full border-2 border-slate-800 shadow-lg relative mb-12"
+                ></div>
+
+                <!-- Act 1: Memulai Menu Kasir -->
+                <div
+                  id="act-node-1"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
+                >
+                  Membuka Menu Penjualan
+                </div>
+
+                <!-- Act 2: Scan Barcode Produk -->
+                <div
+                  id="act-node-2"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-28"
+                >
+                  Memindai Barcode Produk
+                </div>
+
+                <!-- Act 4: Menerima Input Pembayaran -->
+                <div
+                  id="act-node-5"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-16"
+                >
+                  Menerima Pembayaran (Tunai/QRIS)
+                </div>
+              </div>
+
+              <!-- Swimlane 2: SISTEM -->
+              <div
+                class="flex-1 flex flex-col items-center pt-16 relative min-w-[320px]"
+              >
+                <div
+                  class="absolute top-2 left-4 bg-sky-500/10 text-sky-400 px-3 py-0.5 rounded-full border border-sky-500/20 text-[10px] font-bold tracking-widest uppercase"
+                >
+                  SISTEM
+                </div>
+
+                <!-- Act 3: Validasi Stok di Database -->
+                <div
+                  id="act-node-3"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
+                >
+                  Mencari Data Barang & Cek Stok
+                </div>
+
+                <!-- Decision Node: Stok Ada? -->
+                <div
+                  id="act-dec-1"
+                  class="w-10 h-10 border-2 border-amber-500 bg-amber-950/20 rotate-45 flex items-center justify-center mb-10 shadow-lg relative"
+                >
+                  <div class="-rotate-45 text-[9px] font-bold text-amber-400">
+                    ?
+                  </div>
+                </div>
+
+                <!-- Act 3b: Notifikasi error -->
+                <div
+                  id="act-node-err"
+                  class="activity-node border-2 border-rose-600 bg-rose-950/20 px-4 py-2 text-xs w-48 text-center text-rose-300 font-bold mb-12 absolute left-4 top-[290px]"
+                >
+                  Tampilkan: Stok Kosong
+                </div>
+
+                <!-- Act 4: Hitung Total Belanja -->
+                <div
+                  id="act-node-4"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-20"
+                >
+                  Hitung Total & Tambah PPN 11%
+                </div>
+
+                <!-- Act 5: Update database & inventory -->
+                <div
+                  id="act-node-6"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
+                >
+                  Kurangi Stok & Simpan Transaksi
+                </div>
+
+                <!-- Act 6: Cetak struk belanja -->
+                <div
+                  id="act-node-7"
+                  class="activity-node bg-slate-900 border border-slate-700 px-4 py-2 text-xs w-48 text-center text-slate-300 font-semibold mb-12"
+                >
+                  Cetak Struk Bukti Bayar
+                </div>
+
+                <!-- Final State -->
+                <div
+                  id="act-end"
+                  class="w-7 h-7 bg-slate-900 rounded-full border-2 border-slate-100 flex items-center justify-center shadow-lg relative"
+                >
+                  <div class="w-4 h-4 bg-slate-100 rounded-full"></div>
+                </div>
+              </div>
+
+              <!-- SVG Overlay untuk Aliran Panah di Activity Diagram -->
               <svg
-                class="w-12 h-20 text-rose-400"
-                viewBox="0 0 100 100"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="4"
+                id="activity-svg"
+                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[640px] min-h-[780px]"
               >
-                <circle cx="50" cy="20" r="15" />
-                <line x1="50" y1="35" x2="50" y2="70" />
-                <line x1="50" y1="45" x2="20" y2="35" />
-                <line x1="50" y1="45" x2="80" y2="35" />
-                <line x1="50" y1="70" x2="25" y2="95" />
-                <line x1="50" y1="70" x2="75" y2="95" />
+                <defs>
+                  <marker
+                    id="arrow-act"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+                  </marker>
+                  <marker
+                    id="arrow-act-active"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
+                  </marker>
+                </defs>
               </svg>
-              <span class="text-xs font-bold text-rose-300 mt-1 select-none"
-                >MANAJER</span
-              >
-            </div>
-
-            <!-- ================= USE CASES ================= -->
-
-            <!-- UC-01: LOGIN -->
-            <div
-              id="usecase-login"
-              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 410px; top: 60px"
-            >
-              <span class="text-[9px] font-bold text-violet-400 font-mono"
-                >UC-01</span
-              >
-              <span class="text-[11px] font-extrabold leading-tight"
-                >Login Multi-User</span
-              >
-            </div>
-
-            <!-- UC-02: KELOLA BARANG -->
-            <div
-              id="usecase-kelola"
-              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 410px; top: 150px"
-            >
-              <span class="text-[9px] font-bold text-violet-400 font-mono"
-                >UC-02</span
-              >
-              <span class="text-[11px] font-extrabold leading-tight"
-                >Kelola Data Barang</span
-              >
-            </div>
-
-            <!-- UC-03: TRANSAKSI PENJUALAN -->
-            <div
-              id="usecase-transaksi"
-              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 410px; top: 240px"
-            >
-              <span class="text-[9px] font-bold text-violet-400 font-mono"
-                >UC-03</span
-              >
-              <span class="text-[11px] font-extrabold leading-tight"
-                >Memproses Penjualan</span
-              >
-            </div>
-
-            <!-- UC-04: CETAK STRUK (INCLUDED) -->
-            <div
-              id="usecase-cetak"
-              class="usecase-oval absolute border-2 border-amber-500 bg-slate-900/90 text-amber-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 270px; top: 350px"
-            >
-              <span class="text-[9px] font-bold text-amber-400 font-mono"
-                >UC-04</span
-              >
-              <span class="text-[10px] font-extrabold leading-tight"
-                >Cetak Struk Belanja</span
-              >
-            </div>
-
-            <!-- UC-05: DISKON MEMBER (EXTENDED) -->
-            <div
-              id="usecase-diskon"
-              class="usecase-oval absolute border-2 border-fuchsia-500 bg-slate-900/90 text-fuchsia-300 w-40 h-14 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 570px; top: 350px"
-            >
-              <span class="text-[9px] font-bold text-fuchsia-400 font-mono"
-                >UC-05</span
-              >
-              <span class="text-[10px] font-extrabold leading-tight"
-                >Berikan Diskon Member</span
-              >
-            </div>
-
-            <!-- UC-06: RESTOCK BARANG -->
-            <div
-              id="usecase-restock"
-              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 410px; top: 410px"
-            >
-              <span class="text-[9px] font-bold text-violet-400 font-mono"
-                >UC-06</span
-              >
-              <span class="text-[11px] font-extrabold leading-tight"
-                >Melakukan Restock</span
-              >
-            </div>
-
-            <!-- UC-07: MEMANTAU LAPORAN -->
-            <div
-              id="usecase-laporan"
-              class="usecase-oval absolute border-2 border-violet-500 bg-slate-900/90 text-violet-300 w-44 h-16 flex flex-col justify-center items-center px-2 text-center shadow-lg z-20"
-              style="left: 410px; top: 490px"
-            >
-              <span class="text-[9px] font-bold text-violet-400 font-mono"
-                >UC-07</span
-              >
-              <span class="text-[11px] font-extrabold leading-tight"
-                >Memantau Laporan</span
-              >
             </div>
           </div>
 
@@ -435,20 +614,21 @@
         </div>
       </section>
 
-      <!-- Kolom Kanan: Use Case Description (SOP) Viewer -->
+      <!-- KOLOM KANAN: USE CASE & ACTIVITY DESCRIPTION (DOCUMENTER) -->
       <section class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-6">
         <div
           class="bg-slate-950 p-5 rounded-2xl border border-slate-800 shadow-xl flex-1 flex flex-col justify-between overflow-hidden"
         >
           <div class="flex flex-col h-full overflow-hidden">
             <h3
+              id="panel-title"
               class="text-sm font-semibold text-violet-400 uppercase tracking-wider mb-4 flex-shrink-0"
             >
               Use Case Description
             </h3>
 
             <!-- Dropdown Selektor Fitur -->
-            <div class="mb-4 flex-shrink-0">
+            <div id="usecase-select-wrapper" class="mb-4 flex-shrink-0">
               <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
                 >Pilih Use Case untuk melihat dokumen deskripsi:</label
               >
@@ -469,6 +649,30 @@
                 <option value="uc06">UC-06 Melakukan Restock Barang</option>
                 <option value="uc07">UC-07 Memantau Laporan Keuangan</option>
               </select>
+            </div>
+
+            <!-- Detail Kamus Metadata Activity (Hanya tampil saat tab Activity Aktif) -->
+            <div
+              id="activity-metadata-wrapper"
+              class="mb-4 flex-shrink-0 hidden"
+            >
+              <div
+                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              >
+                <div
+                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
+                >
+                  Spesifikasi Aktivitas:
+                </div>
+                <h4 class="text-xs font-bold text-emerald-400 mt-1">
+                  SOP Transaksi Point Of Sale
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                  Activity ini memetakan koordinasi operasional prosedural
+                  antara aksi Kasir dengan respons internal aplikasi web POS
+                  berdasarkan DFD Sesi 8.
+                </p>
+              </div>
             </div>
 
             <!-- Kontainer Dokumen Detail (Scrollable) -->
@@ -499,6 +703,49 @@
 
     <!-- JavaScript Engine -->
     <script>
+      let currentTab = "usecase";
+
+      // Switcher Tab Panel
+      function switchTab(tab) {
+        currentTab = tab;
+
+        const tabUsecase = document.getElementById("tab-usecase");
+        const tabActivity = document.getElementById("tab-activity");
+        const usecaseView = document.getElementById("usecase-canvas-view");
+        const activityView = document.getElementById("activity-canvas-view");
+        const selectWrapper = document.getElementById("usecase-select-wrapper");
+        const activityWrapper = document.getElementById(
+          "activity-metadata-wrapper",
+        );
+        const panelTitle = document.getElementById("panel-title");
+
+        if (tab === "usecase") {
+          tabUsecase.className =
+            "px-3 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white";
+          tabActivity.className =
+            "px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white";
+          usecaseView.classList.remove("hidden");
+          activityView.classList.add("hidden");
+          selectWrapper.classList.remove("hidden");
+          activityWrapper.classList.add("hidden");
+          panelTitle.innerText = "Use Case Description";
+          inspectUseCase("uc01");
+          setTimeout(drawUseCases, 50);
+        } else {
+          tabActivity.className =
+            "px-3 py-1.5 text-xs font-semibold rounded-md transition bg-emerald-600 text-white";
+          tabUsecase.className =
+            "px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white";
+          activityView.classList.remove("hidden");
+          usecaseView.classList.add("hidden");
+          selectWrapper.classList.add("hidden");
+          activityWrapper.classList.remove("hidden");
+          panelTitle.innerText = "Activity Specification";
+          inspectActivityStep("idle");
+          setTimeout(drawActivityLines, 50);
+        }
+      }
+
       // Database Dokumen Use Case Description (SOP) Lengkap
       const useCaseDatabase = {
         uc01: {
@@ -651,7 +898,7 @@
           element.addEventListener("mousedown", startDrag);
           element.addEventListener("touchstart", startDrag, { passive: false });
 
-          // Event klik untuk membuka deskripsi (SOP) di kanan secara otomatis
+          // Event klik untuk membuka deskripsi
           element.addEventListener("click", () => {
             let id = element.id;
             if (id.startsWith("usecase-")) {
@@ -708,11 +955,10 @@
           ? e.touches[0].clientY
           : e.clientY;
 
-        const container = document.getElementById("diagram-capture-area");
+        const container = document.getElementById("usecase-capture-area");
         let newX = clientX - startX;
         let newY = clientY - startY;
 
-        // Batasi agar tidak terseret keluar kanvas
         newX = Math.max(
           0,
           Math.min(newX, container.offsetWidth - activeDragNode.offsetWidth),
@@ -725,7 +971,7 @@
         activeDragNode.style.left = newX + "px";
         activeDragNode.style.top = newY + "px";
 
-        drawRelations();
+        drawUseCases();
       }
 
       function stopDrag() {
@@ -734,32 +980,28 @@
         document.removeEventListener("touchmove", drag);
       }
 
-      // Fungsi menggambar Garis Hubungan (Asosiasi, Include, dan Extend) secara real-time
-      function drawRelations() {
-        const svg = document.getElementById("relation-svg");
+      // Menggambar garis Use Case
+      function drawUseCases() {
+        if (currentTab !== "usecase") return;
+        const svg = document.getElementById("usecase-svg");
 
-        // Bersihkan jalur lama
         const oldLines = svg.querySelectorAll("path, text");
         oldLines.forEach((l) => l.remove());
 
-        // 1. Hubungan Asosiasi (Aktor ke Use Case) - Solid Line
         const associations = [
           { actor: "actor-kasir", usecase: "usecase-login" },
           { actor: "actor-kasir", usecase: "usecase-transaksi" },
-
           { actor: "actor-admin", usecase: "usecase-login" },
           { actor: "actor-admin", usecase: "usecase-kelola" },
           { actor: "actor-admin", usecase: "usecase-restock" },
-
           { actor: "actor-manajer", usecase: "usecase-login" },
           { actor: "actor-manajer", usecase: "usecase-laporan" },
         ];
 
         associations.forEach((assoc) => {
-          drawArrow(assoc.actor, assoc.usecase, false, "solid");
+          drawUmlLine(svg, assoc.actor, assoc.usecase, false, "solid");
         });
 
-        // 2. Hubungan Dependensi UML (Include dan Extend) - Dashed Line dengan Teks Label
         const dependencies = [
           {
             from: "usecase-transaksi",
@@ -776,18 +1018,16 @@
         ];
 
         dependencies.forEach((dep) => {
-          drawArrow(dep.from, dep.to, dep.label, dep.type);
+          drawUmlLine(svg, dep.from, dep.to, dep.label, dep.type);
         });
       }
 
-      function drawArrow(fromId, toId, label, type) {
+      function drawUmlLine(svg, fromId, toId, label, type) {
         const elFrom = document.getElementById(fromId);
         const elTo = document.getElementById(toId);
-        const svg = document.getElementById("relation-svg");
 
         if (!elFrom || !elTo) return;
 
-        // Hitung titik tengah elemen asal dan tujuan
         const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
         const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
         const x2 = elTo.offsetLeft + elTo.offsetWidth / 2;
@@ -800,11 +1040,11 @@
         path.setAttribute("d", `M ${x1} ${y1} L ${x2} ${y2}`);
 
         if (type === "solid") {
-          path.setAttribute("stroke", "#475569"); // Solid Slate
+          path.setAttribute("stroke", "#475569");
           path.setAttribute("stroke-width", "2");
           path.setAttribute("marker-end", "url(#arrow-solid)");
         } else {
-          path.setAttribute("stroke", "#a78bfa"); // Dotted Violet
+          path.setAttribute("stroke", "#a78bfa");
           path.setAttribute("stroke-width", "2");
           path.setAttribute("stroke-dasharray", "5,5");
           path.setAttribute("marker-end", "url(#arrow-dashed)");
@@ -812,7 +1052,6 @@
 
         svg.appendChild(path);
 
-        // Tambahkan Label Dependensi (seperti <<include>> atau <<extend>>) di tengah garis
         if (label) {
           const text = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -838,12 +1077,11 @@
 
         const container = document.getElementById("sop-document-container");
 
-        // Format HTML Dokumen SOP Profesional
         let htmlContent = `
                 <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
                         <span class="text-violet-400 font-mono font-bold">${data.id}</span>
-                        <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">Use Case Desc</span>
+                        <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">UML Spec</span>
                     </div>
                     <h4 class="text-sm font-bold text-white mb-1">${data.name}</h4>
                     <p class="text-slate-400 text-[11px] leading-relaxed mb-3">${data.desc}</p>
@@ -893,7 +1131,7 @@
 
         container.innerHTML = htmlContent;
 
-        // Efek glow visual pada elemen oval use case yang aktif di kanvas
+        // Highlight oval
         document.querySelectorAll(".usecase-oval").forEach((oval) => {
           oval.classList.remove(
             "ring-4",
@@ -920,12 +1158,11 @@
         }
       }
 
-      // Fungsi log info saat aktor di-klik
+      // Log info aktor
       function logActorAccess(role) {
         const container = document.getElementById("sop-document-container");
-        let infoText = "";
-        let color = "text-emerald-400";
         let desc = "";
+        let color = "text-emerald-400";
 
         if (role === "kasir") {
           color = "text-emerald-400";
@@ -947,32 +1184,264 @@
                     <h4 class="text-sm font-bold ${color} mt-1 mb-2 uppercase">${role.toUpperCase()}</h4>
                     <p class="text-slate-300 leading-relaxed">${desc}</p>
                 </div>
-                <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-800/60 border-dashed text-slate-400 text-center">
-                    Klik salah satu lingkaran Use Case di kiri untuk melihat dokumentasi fungsional sistem secara mendalam.
+            `;
+      }
+
+      // Reset Posisi
+      function resetElements() {
+        if (currentTab === "usecase") {
+          for (const [id, pos] of Object.entries(defaultPositions)) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.style.left = pos.x + "px";
+              el.style.top = pos.y + "px";
+            }
+          }
+          drawUseCases();
+        }
+      }
+
+      // ================= ACTIVITY DIAGRAM ENGINE =================
+
+      function drawActivityLines() {
+        if (currentTab !== "activity") return;
+        const svg = document.getElementById("activity-svg");
+
+        // Bersihkan jalur lama
+        const oldLines = svg.querySelectorAll("path, text");
+        oldLines.forEach((l) => l.remove());
+
+        // Alur Berurutan Logis
+        const connections = [
+          { from: "act-start", to: "act-node-1" },
+          { from: "act-node-1", to: "act-node-2" },
+          { from: "act-node-2", to: "act-node-3" },
+          { from: "act-node-3", to: "act-dec-1" },
+          { from: "act-dec-1", to: "act-node-err", label: "Kosong" },
+          { from: "act-dec-1", to: "act-node-4", label: "Tersedia" },
+          { from: "act-node-4", to: "act-node-5" },
+          { from: "act-node-5", to: "act-node-6" },
+          { from: "act-node-6", to: "act-node-7" },
+          { from: "act-node-7", to: "act-end" },
+        ];
+
+        connections.forEach((conn) => {
+          drawActivityArrow(svg, conn.from, conn.to, conn.label);
+        });
+      }
+
+      function drawActivityArrow(svg, fromId, toId, label) {
+        const elFrom = document.getElementById(fromId);
+        const elTo = document.getElementById(toId);
+
+        if (!elFrom || !elTo) return;
+
+        // Koordinat
+        const x1 =
+          elFrom.parentNode.offsetLeft +
+          elFrom.offsetLeft +
+          elFrom.offsetWidth / 2;
+        const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
+        const x2 =
+          elTo.parentNode.offsetLeft + elTo.offsetLeft + elTo.offsetWidth / 2;
+        const y2 = elTo.offsetTop + elTo.offsetHeight / 2;
+
+        const path = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        path.setAttribute("class", "act-flow-line");
+        path.setAttribute("id", `flow-${fromId}-${toId}`);
+
+        // Aturan belokan patah jika antar Swimlane berbeda
+        if (elFrom.parentNode !== elTo.parentNode) {
+          // Aliran Horizontal-Vertikal Sederhana
+          const midX = (x1 + x2) / 2;
+          path.setAttribute("d", `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`);
+        } else {
+          path.setAttribute("d", `M ${x1} ${y1} L ${x2} ${y2}`);
+        }
+
+        path.setAttribute("stroke", "#475569");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("fill", "none");
+        path.setAttribute("marker-end", "url(#arrow-act)");
+        svg.appendChild(path);
+
+        if (label) {
+          const text = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          const midX =
+            (x1 + x2) / 2 +
+            (fromId === "act-dec-1" && toId === "act-node-err" ? -35 : 10);
+          const midY = (y1 + y2) / 2 - 5;
+          text.setAttribute("x", midX);
+          text.setAttribute("y", midY);
+          text.setAttribute("fill", "#f59e0b");
+          text.setAttribute("font-size", "10px");
+          text.setAttribute("class", "font-bold font-mono");
+          text.textContent = label;
+          svg.appendChild(text);
+        }
+      }
+
+      // Inspeksi Panel Kanan untuk Info Detail Setiap Aktivitas
+      const activityDescriptions = {
+        idle: {
+          step: "Ready",
+          title: "Silakan Memulai Simulasi",
+          desc: "Klik tombol 'Simulasikan Alur' di bagian atas kanvas untuk melihat jalannya token aktivitas berpindah secara interaktif dari satu penanggung jawab (Kasir) ke sistem backend (Sistem).",
+        },
+        "act-start": {
+          step: "01",
+          title: "Initial Node (Titik Mulai)",
+          desc: "Mengindikasikan mulainya sebuah workflow aktivitas operasional pada mesin POS kasir minimarket.",
+        },
+        "act-node-1": {
+          step: "02",
+          title: "Kasir: Membuka Menu Penjualan",
+          desc: "Kasir mengklik halaman POS penjualan pada layar perangkat untuk membuka form input keranjang belanja aktif baru.",
+        },
+        "act-node-2": {
+          step: "03",
+          title: "Kasir: Memindai Barcode Produk",
+          desc: "Kasir menggunakan alat pemindai fisik (barcode scanner) untuk membaca data kode batang yang tertera di kemasan barang belanjaan pelanggan.",
+        },
+        "act-node-3": {
+          step: "04",
+          title: "Sistem: Mencari Data Barang & Cek Stok",
+          desc: "Sistem backend langsung mencocokkan kode barcode yang dikirimkan ke data server pusat untuk mencari nama produk, harga dasar, serta memastikan ketersediaan kuantitas stok saat ini.",
+        },
+        "act-dec-1": {
+          step: "05",
+          title: "Decision Node: Apakah Stok Tersedia?",
+          desc: "Sistem mengevaluasi kondisi logika: jika angka stok barang <= 0, alur dibelokkan ke penanganan kegagalan (Stok Kosong). Jika stok > 0, lanjut ke kalkulasi harga.",
+        },
+        "act-node-err": {
+          step: "05.a",
+          title: "Sistem: Notifikasi Stok Habis",
+          desc: "Sistem menampilkan alert kesalahan berwarna merah di layar kasir untuk mengindikasikan barang tidak dapat dimasukkan ke keranjang belanja.",
+        },
+        "act-node-4": {
+          step: "06",
+          title: "Sistem: Hitung Total & PPN",
+          desc: "Sistem memasukkan barang ke keranjang belanja virtual, mengakumulasi total belanja, serta menghitung pajak PPN 11% secara otomatis.",
+        },
+        "act-node-5": {
+          step: "07",
+          title: "Kasir: Menerima Input Pembayaran",
+          desc: "Kasir menerima nominal uang pembayaran fisik dari pelanggan (atau menyodorkan kode QRIS) dan menginputkannya ke form pembayaran sistem.",
+        },
+        "act-node-6": {
+          step: "08",
+          title: "Sistem: Update Database & Stok",
+          desc: "Sistem mengonfirmasi pembayaran sah, menyimpan log ke tabel transaksi, dan langsung memotong saldo stok produk di gudang digital.",
+        },
+        "act-node-7": {
+          step: "09",
+          title: "Sistem: Cetak Struk Belanja",
+          desc: "Sistem mengirimkan trigger dokumen cetak ke perangkat printer untuk menerbitkan kertas bukti pembayaran fisik.",
+        },
+        "act-end": {
+          step: "10",
+          title: "Final Activity Node (Selesai)",
+          desc: "Mengindikasikan akhir siklus dari aktivitas transaksi transaksi ritel secara sukses.",
+        },
+      };
+
+      function inspectActivityStep(id) {
+        const data = activityDescriptions[id];
+        if (!data) return;
+
+        const container = document.getElementById("sop-document-container");
+        container.innerHTML = `
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                        <span class="text-emerald-400 font-mono font-bold">Langkah ${data.step}</span>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-bold uppercase">SOP LOGIC</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-white mb-2">${data.title}</h4>
+                    <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
+                </div>
+                <div class="bg-slate-900/30 p-4 rounded-xl border border-slate-800/60 border-dashed text-slate-400 text-center text-[11px]">
+                    Tekan tombol "Simulasikan Alur" di bagian atas kanvas untuk melihat demonstrasi token transaksional secara otomatis.
                 </div>
             `;
       }
 
-      // Reset Posisi Elemen
-      function resetElements() {
-        for (const [id, pos] of Object.entries(defaultPositions)) {
-          const el = document.getElementById(id);
-          if (el) {
-            el.style.left = pos.x + "px";
-            el.style.top = pos.y + "px";
-          }
-        }
-        drawRelations();
+      // Simulator Token Alur Activity Diagram
+      let activeTimeoutIds = [];
+      function startActivitySimulation() {
+        // Bersihkan timer lama jika ada
+        activeTimeoutIds.forEach(clearTimeout);
+        activeTimeoutIds = [];
+
+        // Kembalikan semua node ke warna semula
+        document
+          .querySelectorAll(".activity-node, #act-start, #act-end, #act-dec-1")
+          .forEach((node) => {
+            node.classList.remove("active-token");
+            node.style.borderColor = "";
+          });
+
+        // Alur jalannya token simulasi sukses
+        const steps = [
+          { id: "act-start", delay: 0 },
+          { id: "act-node-1", delay: 1200 },
+          { id: "act-node-2", delay: 2400 },
+          { id: "act-node-3", delay: 3600 },
+          { id: "act-dec-1", delay: 4800 },
+          { id: "act-node-4", delay: 6000 },
+          { id: "act-node-5", delay: 7200 },
+          { id: "act-node-6", delay: 8400 },
+          { id: "act-node-7", delay: 9600 },
+          { id: "act-end", delay: 10800 },
+        ];
+
+        steps.forEach((step) => {
+          const tId = setTimeout(() => {
+            // Matikan highlight sebelumnya
+            document
+              .querySelectorAll(
+                ".activity-node, #act-start, #act-end, #act-dec-1",
+              )
+              .forEach((node) => {
+                node.classList.remove("active-token");
+                node.style.borderColor = "";
+              });
+
+            const node = document.getElementById(step.id);
+            if (node) {
+              node.classList.add("active-token");
+              if (step.id === "act-dec-1") {
+                node.style.borderColor = "#10b981";
+              }
+              node.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            inspectActivityStep(step.id);
+          }, step.delay);
+          activeTimeoutIds.push(tId);
+        });
       }
 
-      // Ekspor Gambar (PNG) Tanpa Terpotong
-      function exportDiagram() {
-        const targetElement = document.getElementById("diagram-capture-area");
+      // Ekspor Diagram Aktif (Use Case / Activity)
+      function exportActiveDiagram() {
+        const captureId =
+          currentTab === "usecase"
+            ? "usecase-capture-area"
+            : "activity-capture-area";
+        const filename =
+          currentTab === "usecase"
+            ? "UseCase_Diagram_Raffi.png"
+            : "Activity_Diagram_Raffi.png";
+        const targetElement = document.getElementById(captureId);
 
-        // Clone element untuk menghilangkan batas overflow / scroll saat penangkapan layar
+        // Kloning aman off-screen
         const clone = targetElement.cloneNode(true);
-        clone.style.width = "1000px";
-        clone.style.height = "600px";
+        clone.style.width = currentTab === "usecase" ? "1000px" : "720px";
+        clone.style.height = currentTab === "usecase" ? "600px" : "780px";
         clone.style.overflow = "visible";
         clone.style.position = "absolute";
         clone.style.top = "-9999px";
@@ -981,18 +1450,18 @@
 
         const options = {
           backgroundColor: "#0a0f1d",
-          scale: 2, // Kualitas HD agar tulisan diagram tajam
+          scale: 2,
           logging: false,
           useCORS: true,
-          width: 1000,
-          height: 600,
+          width: currentTab === "usecase" ? 1000 : 720,
+          height: currentTab === "usecase" ? 600 : 780,
         };
 
         html2canvas(clone, options)
           .then((canvas) => {
             const image = canvas.toDataURL("image/png", 1.0);
             const link = document.createElement("a");
-            link.download = `UseCase_Diagram_Raffi.png`;
+            link.download = filename;
             link.href = image;
             document.body.appendChild(link);
             link.click();
@@ -1003,28 +1472,30 @@
             if (document.body.contains(clone)) {
               document.body.removeChild(clone);
             }
-            alert("Gagal mengekspor diagram: " + err);
+            alert("Gagal mengunduh diagram: " + err);
           });
       }
 
-      // Inisialisasi awal aplikasi
+      // Inisialisasi awal saat halaman terbuka
       window.onload = () => {
-        drawRelations();
+        drawUseCases();
         inspectUseCase("uc01");
 
-        // Set-up observer untuk resizing kanvas agar garis relasi tetap presisi
-        const canvasContainer = document.getElementById(
-          "diagram-canvas-container",
-        );
-        if (canvasContainer) {
-          const resizeObserver = new ResizeObserver(() => {
-            drawRelations();
+        // Setup Resize Observer untuk dynamic SVG rendering
+        const container = document.getElementById("diagram-canvas-container");
+        if (container) {
+          const observer = new ResizeObserver(() => {
+            drawUseCases();
+            drawActivityLines();
           });
-          resizeObserver.observe(canvasContainer);
+          observer.observe(container);
         }
       };
 
-      window.onresize = drawRelations;
+      window.onresize = () => {
+        drawUseCases();
+        drawActivityLines();
+      };
     </script>
   </body>
 </html>
