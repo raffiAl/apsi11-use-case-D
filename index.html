@@ -8,9 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- html2canvas untuk Ekspor PNG -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap");
-
       body {
         font-family: "Plus Jakarta Sans", sans-serif;
         background-color: #0b1329;
@@ -36,7 +38,7 @@
           );
       }
 
-      /* Gaya interaktif untuk elemen Use Case & Activity Diagram */
+      /* Gaya interaktif untuk elemen Use Case & Diagram lainnya */
       .usecase-oval {
         border-radius: 50% / 50%;
         cursor: grab;
@@ -63,7 +65,20 @@
         transform: scale(1.05);
       }
 
-      /* Gaya untuk Aktor */
+      /* Class Diagram Styling */
+      .class-box {
+        border-radius: 8px;
+        cursor: grab;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .class-box:active {
+        cursor: grabbing;
+        transform: scale(1.02);
+      }
+
+      /* Style untuk Aktor */
       .actor-box {
         cursor: grab;
         transition:
@@ -74,6 +89,25 @@
       .actor-box:active {
         cursor: grabbing;
         transform: scale(1.05);
+      }
+
+      /* Lifeline & Message Sequence Diagram */
+      .sequence-lifeline {
+        border-style: dashed;
+        border-width: 0 0 0 2px;
+      }
+
+      .activation-bar {
+        background-color: #475569;
+        width: 14px;
+        margin-left: -6px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .activation-bar.active {
+        background-color: #8b5cf6;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
       }
 
       /* Custom Scrollbar */
@@ -118,10 +152,10 @@
           </div>
           <div>
             <h1 class="text-lg font-bold text-white flex items-center gap-2">
-              APSI UML Workspace
+              APSI UML Workspace Pro
               <span
                 class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-full border border-violet-500/20"
-                >Sesi 11 & 12</span
+                >Sesi 11 - 14</span
               >
             </h1>
             <p class="text-xs text-slate-400">
@@ -130,27 +164,43 @@
           </div>
         </div>
 
-        <!-- Tab Switcher & Download -->
+        <!-- Tab Switcher & Actions -->
         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-          <div class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex">
+          <div
+            class="bg-slate-900 p-1 rounded-lg border border-slate-800 flex flex-wrap gap-1"
+          >
             <button
               onclick="switchTab('usecase')"
               id="tab-usecase"
-              class="px-3 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white"
+              class="px-2.5 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white"
             >
-              Use Case Diagram
+              Use Case
             </button>
             <button
               onclick="switchTab('activity')"
               id="tab-activity"
-              class="px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white"
+              class="px-2.5 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white"
             >
-              Activity Diagram
+              Activity
+            </button>
+            <button
+              onclick="switchTab('sequence')"
+              id="tab-sequence"
+              class="px-2.5 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white"
+            >
+              Sequence
+            </button>
+            <button
+              onclick="switchTab('class')"
+              id="tab-class"
+              class="px-2.5 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white"
+            >
+              Class Diagram
             </button>
           </div>
           <button
             onclick="exportActiveDiagram()"
-            class="flex items-center justify-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold px-4 py-2 rounded-lg transition shadow-md shadow-violet-500/10"
+            class="flex items-center justify-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-500 text-white font-bold px-3 py-2 rounded-lg transition shadow-md shadow-violet-500/10"
           >
             <svg
               class="w-4 h-4"
@@ -169,7 +219,7 @@
           </button>
           <button
             onclick="resetElements()"
-            class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-lg border border-slate-700 transition"
+            class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition"
           >
             Reset Posisi
           </button>
@@ -185,8 +235,7 @@
       <section class="flex-1 flex flex-col gap-4 min-w-0">
         <div
           id="diagram-canvas-container"
-          class="bg-slate-950 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col relative h-[650px] w-full max-w-full"
-          style="resize: both"
+          class="bg-slate-950 rounded-2xl border border-slate-800 shadow-xl overflow-hidden flex flex-col relative h-[680px] w-full max-w-full"
         >
           <!-- USE CASE CANVAS VIEW -->
           <div id="usecase-canvas-view" class="flex-1 flex flex-col h-full">
@@ -423,7 +472,7 @@
             </div>
           </div>
 
-          <!-- ACTIVITY DIAGRAM CANVAS VIEW (Hidden by default) -->
+          <!-- ACTIVITY DIAGRAM CANVAS VIEW -->
           <div
             id="activity-canvas-view"
             class="flex-1 flex flex-col h-full hidden"
@@ -450,190 +499,455 @@
 
             <div
               id="activity-capture-area"
-              class="flex-1 w-full h-full relative bg-[#0a0f1d] overflow-auto min-h-[820px] select-none"
+              class="flex-1 w-full overflow-auto bg-[#0a0f1d] select-none relative"
             >
-              <!-- Batas Garis Tengah Swimlane -->
+              <!-- Scroll Pane berukuran tetap untuk mengunci visual seluruh elemen dan garis SVG agar tidak meluap keluar kanvas -->
               <div
-                class="absolute inset-y-0 left-1/2 w-px bg-slate-800 z-10 pointer-events-none"
-              ></div>
-
-              <!-- Judul Swimlane 1: KASIR -->
-              <div
-                class="absolute top-4 left-4 bg-emerald-500/10 text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
+                id="activity-scroll-pane"
+                class="relative w-full h-[850px] min-w-[800px]"
               >
-                KASIR (Aktor)
-              </div>
+                <div
+                  class="absolute inset-y-0 left-1/2 w-px bg-slate-800 z-10 pointer-events-none"
+                ></div>
 
-              <!-- Judul Swimlane 2: SISTEM -->
-              <div
-                class="absolute top-4 left-[calc(50%+16px)] bg-sky-500/10 text-sky-400 px-3 py-0.5 rounded-full border border-sky-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
-              >
-                SISTEM (Aplikasi)
-              </div>
-
-              <!-- === ELEMEN SWIMLANE KASIR === -->
-              <!-- Initial Node (Mulai) -->
-              <div
-                id="act-start"
-                class="absolute w-6 h-6 bg-slate-100 rounded-full border-2 border-slate-800 shadow-lg z-20"
-                style="left: calc(25% - 12px); top: 60px"
-              ></div>
-
-              <!-- Akt 1: Buka Menu -->
-              <div
-                id="act-node-1"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(25% - 104px); top: 120px"
-              >
-                Membuka Menu Penjualan
-              </div>
-
-              <!-- Akt 2: Scan Barcode -->
-              <div
-                id="act-node-2"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(25% - 104px); top: 200px"
-              >
-                Memindai Barcode Produk
-              </div>
-
-              <!-- Akt 3b: Notifikasi Error (Terstruktur lurus dengan Decision Node di kanan) -->
-              <div
-                id="act-node-err"
-                class="activity-node absolute border border-rose-500 bg-rose-950/20 px-4 py-2.5 text-xs w-52 text-center text-rose-300 font-bold shadow-md z-20"
-                style="left: calc(25% - 104px); top: 350px"
-              >
-                Tampilkan: Stok Kosong
-              </div>
-
-              <!-- End Error Node -->
-              <div
-                id="act-end-err"
-                class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-rose-500 flex items-center justify-center shadow-lg z-20"
-                style="left: calc(25% - 14px); top: 440px"
-              >
-                <div class="w-4 h-4 bg-rose-500 rounded-full"></div>
-              </div>
-
-              <!-- Akt 5: Input Pembayaran -->
-              <div
-                id="act-node-5"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(25% - 104px); top: 510px"
-              >
-                Menerima Pembayaran (Tunai/QRIS)
-              </div>
-
-              <!-- === ELEMEN SWIMLANE SISTEM === -->
-              <!-- Akt 3: Validasi database -->
-              <div
-                id="act-node-3"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(75% - 104px); top: 200px"
-              >
-                Mencari Data Barang & Cek Stok
-              </div>
-
-              <!-- Decision Node (Stok Ada?) -->
-              <div
-                id="act-dec-1"
-                class="absolute w-10 h-10 border-2 border-amber-500 bg-amber-950/20 rotate-45 flex items-center justify-center shadow-lg z-20"
-                style="left: calc(75% - 20px); top: 280px"
-              >
-                <div class="-rotate-45 text-[10px] font-bold text-amber-400">
-                  ?
+                <div
+                  class="absolute top-4 left-4 bg-emerald-500/10 text-emerald-400 px-3 py-0.5 rounded-full border border-emerald-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
+                >
+                  KASIR (Aktor)
                 </div>
-              </div>
+                <div
+                  class="absolute top-4 left-[calc(50%+16px)] bg-sky-500/10 text-sky-400 px-3 py-0.5 rounded-full border border-sky-500/20 text-[10px] font-bold tracking-widest uppercase z-20"
+                >
+                  SISTEM (Aplikasi)
+                </div>
 
-              <!-- Akt 4: Hitung Total -->
-              <div
-                id="act-node-4"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(75% - 104px); top: 350px"
-              >
-                Hitung Total & Tambah PPN 11%
-              </div>
+                <!-- Elemen-elemen Activity -->
+                <div
+                  id="act-start"
+                  class="absolute w-6 h-6 bg-slate-100 rounded-full border-2 border-slate-800 shadow-lg z-20"
+                  style="left: calc(25% - 12px); top: 60px"
+                ></div>
+                <div
+                  id="act-node-1"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(25% - 104px); top: 120px"
+                >
+                  Membuka Menu Penjualan
+                </div>
+                <div
+                  id="act-node-2"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(25% - 104px); top: 200px"
+                >
+                  Memindai Barcode Produk
+                </div>
+                <div
+                  id="act-node-err"
+                  class="activity-node absolute border border-rose-500 bg-rose-950/20 px-4 py-2.5 text-xs w-52 text-center text-rose-300 font-bold shadow-md z-20"
+                  style="left: calc(25% - 104px); top: 350px"
+                >
+                  Tampilkan: Stok Kosong
+                </div>
+                <div
+                  id="act-end-err"
+                  class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-rose-500 flex items-center justify-center shadow-lg z-20"
+                  style="left: calc(25% - 14px); top: 440px"
+                >
+                  <div class="w-4 h-4 bg-rose-500 rounded-full"></div>
+                </div>
+                <div
+                  id="act-node-5"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(25% - 104px); top: 510px"
+                >
+                  Menerima Pembayaran (Tunai/QRIS)
+                </div>
 
-              <!-- Akt 6: Kurangi database -->
-              <div
-                id="act-node-6"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(75% - 104px); top: 580px"
-              >
-                Kurangi Stok & Simpan Transaksi
-              </div>
+                <div
+                  id="act-node-3"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(75% - 104px); top: 200px"
+                >
+                  Mencari Data Barang & Cek Stok
+                </div>
+                <div
+                  id="act-dec-1"
+                  class="absolute w-10 h-10 border-2 border-amber-500 bg-amber-950/20 rotate-45 flex items-center justify-center shadow-lg z-20"
+                  style="left: calc(75% - 20px); top: 280px"
+                >
+                  <div class="-rotate-45 text-[10px] font-bold text-amber-400">
+                    ?
+                  </div>
+                </div>
+                <div
+                  id="act-node-4"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(75% - 104px); top: 350px"
+                >
+                  Hitung Total & Tambah PPN 11%
+                </div>
+                <div
+                  id="act-node-6"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(75% - 104px); top: 580px"
+                >
+                  Kurangi Stok & Simpan Transaksi
+                </div>
+                <div
+                  id="act-node-7"
+                  class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
+                  style="left: calc(75% - 104px); top: 660px"
+                >
+                  Cetak Struk Bukti Bayar
+                </div>
+                <div
+                  id="act-end"
+                  class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-slate-100 flex items-center justify-center shadow-lg z-20"
+                  style="left: calc(75% - 14px); top: 740px"
+                >
+                  <div class="w-4 h-4 bg-slate-100 rounded-full"></div>
+                </div>
 
-              <!-- Akt 7: Cetak struk -->
-              <div
-                id="act-node-7"
-                class="activity-node absolute bg-slate-900 border border-slate-700 px-4 py-2.5 text-xs w-52 text-center text-slate-300 font-semibold shadow-md z-20"
-                style="left: calc(75% - 104px); top: 660px"
-              >
-                Cetak Struk Bukti Bayar
+                <svg
+                  id="activity-svg"
+                  class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[800px] min-h-[820px]"
+                >
+                  <defs>
+                    <marker
+                      id="arrow-act"
+                      viewBox="0 0 10 10"
+                      refX="8"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+                    </marker>
+                    <marker
+                      id="arrow-act-active"
+                      viewBox="0 0 10 10"
+                      refX="8"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
+                    </marker>
+                  </defs>
+                </svg>
               </div>
-
-              <!-- Final Node (Selesai) -->
-              <div
-                id="act-end"
-                class="absolute w-7 h-7 bg-slate-900 rounded-full border-2 border-slate-100 flex items-center justify-center shadow-lg z-20"
-                style="left: calc(75% - 14px); top: 740px"
-              >
-                <div class="w-4 h-4 bg-slate-100 rounded-full"></div>
-              </div>
-
-              <!-- SVG Overlay untuk Aliran Panah di Activity Diagram -->
-              <svg
-                id="activity-svg"
-                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[800px] min-h-[820px]"
-              >
-                <defs>
-                  <marker
-                    id="arrow-act"
-                    viewBox="0 0 10 10"
-                    refX="8"
-                    refY="5"
-                    markerWidth="6"
-                    markerHeight="6"
-                    orient="auto-start-reverse"
-                  >
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
-                  </marker>
-                  <marker
-                    id="arrow-act-active"
-                    viewBox="0 0 10 10"
-                    refX="8"
-                    refY="5"
-                    markerWidth="6"
-                    markerHeight="6"
-                    orient="auto-start-reverse"
-                  >
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981" />
-                  </marker>
-                </defs>
-              </svg>
             </div>
           </div>
 
-          <!-- Resize Handle Visual -->
+          <!-- SEQUENCE DIAGRAM CANVAS VIEW -->
           <div
-            class="absolute bottom-0 right-0 w-5 h-5 pointer-events-none z-30 flex items-end justify-end p-0.5"
+            id="sequence-canvas-view"
+            class="flex-1 flex flex-col h-full hidden"
           >
-            <svg
-              class="w-4 h-4 text-slate-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
+            <div
+              class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
             >
-              <line x1="22" y1="6" x2="6" y2="22" />
-              <line x1="22" y1="12" x2="12" y2="22" />
-              <line x1="22" y1="18" x2="18" y2="22" />
-            </svg>
+              <div class="flex items-center gap-3">
+                <span
+                  class="w-2.5 h-2.5 rounded-full bg-violet-500 animate-pulse"
+                ></span>
+                <span
+                  class="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                  >Sequence Diagram (Skenario Transaksi Penjualan)</span
+                >
+              </div>
+              <button
+                onclick="startSequenceSimulation()"
+                class="bg-violet-600 hover:bg-violet-500 text-white font-bold px-3 py-1 text-xs rounded-lg transition shadow-md flex items-center gap-1"
+              >
+                ▶ Simulasikan Skenario
+              </button>
+            </div>
+
+            <div
+              id="sequence-capture-area"
+              class="flex-1 w-full overflow-auto bg-[#0a0f1d] select-none relative p-4 grid-bg"
+            >
+              <div class="relative w-[850px] h-[550px] mx-auto mt-6">
+                <!-- Lifeline dashed tracks -->
+                <div
+                  class="absolute top-[80px] bottom-[50px] left-[110px] w-0.5 border-l-2 border-dashed border-slate-700/60"
+                ></div>
+                <div
+                  class="absolute top-[80px] bottom-[50px] left-[310px] w-0.5 border-l-2 border-dashed border-slate-700/60"
+                ></div>
+                <div
+                  class="absolute top-[80px] bottom-[50px] left-[530px] w-0.5 border-l-2 border-dashed border-slate-700/60"
+                ></div>
+                <div
+                  class="absolute top-[80px] bottom-[50px] left-[750px] w-0.5 border-l-2 border-dashed border-slate-700/60"
+                ></div>
+
+                <!-- Objek Lifeline Header -->
+                <div
+                  class="absolute top-2 left-[40px] w-[140px] bg-slate-900 border-2 border-emerald-500 text-emerald-300 py-2.5 rounded-lg text-center font-bold text-xs shadow-lg"
+                >
+                  Actor: Kasir
+                </div>
+                <div
+                  class="absolute top-2 left-[240px] w-[140px] bg-slate-900 border-2 border-sky-500 text-sky-300 py-2.5 rounded-lg text-center font-bold text-xs shadow-lg"
+                >
+                  :UI_Penjualan
+                </div>
+                <div
+                  class="absolute top-2 left-[460px] w-[140px] bg-slate-900 border-2 border-violet-500 text-violet-300 py-2.5 rounded-lg text-center font-bold text-xs shadow-lg"
+                >
+                  :Sistem_POS
+                </div>
+                <div
+                  class="absolute top-2 left-[680px] w-[140px] bg-slate-900 border-2 border-rose-500 text-rose-300 py-2.5 rounded-lg text-center font-bold text-xs shadow-lg"
+                >
+                  :Database
+                </div>
+
+                <!-- Activation Bars -->
+                <div
+                  id="act-bar-kasir"
+                  class="activation-bar absolute top-[80px] bottom-[80px] left-[110px]"
+                ></div>
+                <div
+                  id="act-bar-ui"
+                  class="activation-bar absolute top-[80px] bottom-[100px] left-[310px]"
+                ></div>
+                <div
+                  id="act-bar-controller"
+                  class="activation-bar absolute top-[160px] bottom-[120px] left-[530px]"
+                ></div>
+                <div
+                  id="act-bar-db"
+                  class="activation-bar absolute top-[200px] bottom-[150px] left-[750px]"
+                ></div>
+
+                <!-- SVG overlay untuk menggambarkan panah message -->
+                <svg
+                  id="sequence-svg"
+                  class="absolute inset-0 w-full h-full pointer-events-none z-10"
+                >
+                  <defs>
+                    <marker
+                      id="seq-arrow"
+                      viewBox="0 0 10 10"
+                      refX="8"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                    </marker>
+                    <marker
+                      id="seq-return"
+                      viewBox="0 0 10 10"
+                      refX="8"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto-start-reverse"
+                    >
+                      <path d="M 10 0 L 0 5 L 10 10 z" fill="#94a3b8" />
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- CLASS DIAGRAM CANVAS VIEW -->
+          <div
+            id="class-canvas-view"
+            class="flex-1 flex flex-col h-full hidden"
+          >
+            <div
+              class="bg-slate-950/90 border-b border-slate-800 px-5 py-3 flex justify-between items-center z-20 select-none"
+            >
+              <div class="flex items-center gap-2">
+                <span
+                  class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"
+                ></span>
+                <span
+                  class="text-xs font-semibold uppercase tracking-wider text-slate-400"
+                  >Class Diagram (Geser Kelas & Klik Spesifikasi)</span
+                >
+              </div>
+              <div class="text-[10px] text-slate-500">
+                <span>Biru Solid = Komposisi</span>
+              </div>
+            </div>
+
+            <div
+              id="class-capture-area"
+              class="flex-1 w-full h-full relative grid-bg overflow-auto bg-[#0a0f1d] p-4"
+            >
+              <svg
+                id="class-svg"
+                class="absolute inset-0 w-full h-full pointer-events-none z-10 min-w-[1000px] min-h-[600px]"
+              >
+                <defs>
+                  <!-- Diamond Marker untuk Composite Association -->
+                  <marker
+                    id="composition"
+                    viewBox="0 0 12 12"
+                    refX="0"
+                    refY="6"
+                    markerWidth="10"
+                    markerHeight="10"
+                    orient="auto-start-reverse"
+                  >
+                    <path
+                      d="M 0 6 L 6 0 L 12 6 L 6 12 Z"
+                      fill="#38bdf8"
+                      stroke="#0a0f1d"
+                      stroke-width="1"
+                    />
+                  </marker>
+                </defs>
+              </svg>
+
+              <!-- Class Box: User -->
+              <div
+                id="class-user"
+                class="class-box absolute bg-slate-900 border-2 border-slate-700 text-xs text-slate-200 w-52 overflow-hidden shadow-2xl z-20"
+                style="left: 60px; top: 60px"
+              >
+                <div
+                  class="bg-slate-800 border-b border-slate-700 p-2 font-bold text-center text-sky-400"
+                >
+                  User
+                </div>
+                <div
+                  class="p-2 space-y-0.5 border-b border-slate-800 font-mono text-[10px] text-slate-400"
+                >
+                  <div>- id_user: Int</div>
+                  <div>- nama: String</div>
+                  <div>- username: String</div>
+                  <div>- role: String</div>
+                </div>
+                <div
+                  class="p-2 space-y-0.5 font-mono text-[10px] text-emerald-400"
+                >
+                  <div>+ login(): Boolean</div>
+                  <div>+ logout(): Boolean</div>
+                </div>
+              </div>
+
+              <!-- Class Box: Transaksi -->
+              <div
+                id="class-transaksi"
+                class="class-box absolute bg-slate-900 border-2 border-slate-700 text-xs text-slate-200 w-52 overflow-hidden shadow-2xl z-20"
+                style="left: 380px; top: 60px"
+              >
+                <div
+                  class="bg-slate-800 border-b border-slate-700 p-2 font-bold text-center text-sky-400"
+                >
+                  Transaksi
+                </div>
+                <div
+                  class="p-2 space-y-0.5 border-b border-slate-800 font-mono text-[10px] text-slate-400"
+                >
+                  <div>- id_transaksi: String</div>
+                  <div>- tgl_transaksi: Date</div>
+                  <div>- total_bayar: Double</div>
+                  <div>- ppn: Double = 0.11</div>
+                </div>
+                <div
+                  class="p-2 space-y-0.5 font-mono text-[10px] text-emerald-400"
+                >
+                  <div>+ hitungTotal(): Double</div>
+                  <div>+ simpanTransaksi()</div>
+                  <div>+ cetakStruk()</div>
+                </div>
+              </div>
+
+              <!-- Class Box: DetailTransaksi -->
+              <div
+                id="class-detail"
+                class="class-box absolute bg-slate-900 border-2 border-slate-700 text-xs text-slate-200 w-52 overflow-hidden shadow-2xl z-20"
+                style="left: 380px; top: 290px"
+              >
+                <div
+                  class="bg-slate-800 border-b border-slate-700 p-2 font-bold text-center text-sky-400"
+                >
+                  DetailTransaksi
+                </div>
+                <div
+                  class="p-2 space-y-0.5 border-b border-slate-800 font-mono text-[10px] text-slate-400"
+                >
+                  <div>- id_detail: Int</div>
+                  <div>- jumlah: Int</div>
+                  <div>- subtotal: Double</div>
+                </div>
+                <div
+                  class="p-2 space-y-0.5 font-mono text-[10px] text-emerald-400"
+                >
+                  <div>+ hitungSubtotal(): Double</div>
+                </div>
+              </div>
+
+              <!-- Class Box: Barang -->
+              <div
+                id="class-barang"
+                class="class-box absolute bg-slate-900 border-2 border-slate-700 text-xs text-slate-200 w-52 overflow-hidden shadow-2xl z-20"
+                style="left: 710px; top: 290px"
+              >
+                <div
+                  class="bg-slate-800 border-b border-slate-700 p-2 font-bold text-center text-sky-400"
+                >
+                  Barang
+                </div>
+                <div
+                  class="p-2 space-y-0.5 border-b border-slate-800 font-mono text-[10px] text-slate-400"
+                >
+                  <div>- kode_barang: String</div>
+                  <div>- nama_barang: String</div>
+                  <div>- harga_jual: Double</div>
+                  <div>- stok: Int</div>
+                </div>
+                <div
+                  class="p-2 space-y-0.5 font-mono text-[10px] text-emerald-400"
+                >
+                  <div>+ updateStok(qty)</div>
+                  <div>+ cekStok(): Int</div>
+                </div>
+              </div>
+
+              <!-- Class Box: Member -->
+              <div
+                id="class-member"
+                class="class-box absolute bg-slate-900 border-2 border-slate-700 text-xs text-slate-200 w-52 overflow-hidden shadow-2xl z-20"
+                style="left: 710px; top: 60px"
+              >
+                <div
+                  class="bg-slate-800 border-b border-slate-700 p-2 font-bold text-center text-sky-400"
+                >
+                  Member
+                </div>
+                <div
+                  class="p-2 space-y-0.5 border-b border-slate-800 font-mono text-[10px] text-slate-400"
+                >
+                  <div>- id_member: String</div>
+                  <div>- nama: String</div>
+                  <div>- poin: Int</div>
+                </div>
+                <div
+                  class="p-2 space-y-0.5 font-mono text-[10px] text-emerald-400"
+                >
+                  <div>+ dapatkanDiskon(): Double</div>
+                  <div>+ tambahPoin(total)</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- KOLOM KANAN: USE CASE & ACTIVITY DESCRIPTION (DOCUMENTER) -->
+      <!-- KOLOM KANAN: DOKUMENTER SPEC (INFORMASI DETIL) -->
       <section class="w-full lg:w-96 flex-shrink-0 flex flex-col gap-6">
         <div
           class="bg-slate-950 p-5 rounded-2xl border border-slate-800 shadow-xl flex-1 flex flex-col justify-between overflow-hidden"
@@ -646,7 +960,7 @@
               Use Case Description
             </h3>
 
-            <!-- Dropdown Selektor Fitur -->
+            <!-- Dropdown Selektor Fitur Use Case -->
             <div id="usecase-select-wrapper" class="mb-4 flex-shrink-0">
               <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
                 >Pilih Use Case untuk melihat dokumen deskripsi:</label
@@ -670,7 +984,7 @@
               </select>
             </div>
 
-            <!-- Detail Kamus Metadata Activity (Hanya tampil saat tab Activity Aktif) -->
+            <!-- Detail Metadata Activity -->
             <div
               id="activity-metadata-wrapper"
               class="mb-4 flex-shrink-0 hidden"
@@ -687,9 +1001,54 @@
                   SOP Transaksi Point Of Sale
                 </h4>
                 <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
-                  Activity ini memetakan koordinasi operasional prosedural
-                  antara aksi Kasir dengan respons internal aplikasi web POS
-                  berdasarkan DFD Sesi 8.
+                  Mendeskripsikan alur aktivitas teratur saat kasir melakukan
+                  scan item belanjaan hingga proses pencetakan struk transaksi
+                  selesai.
+                </p>
+              </div>
+            </div>
+
+            <!-- Detail Metadata Sequence -->
+            <div
+              id="sequence-metadata-wrapper"
+              class="mb-4 flex-shrink-0 hidden"
+            >
+              <div
+                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              >
+                <div
+                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
+                >
+                  Skenario Sequence:
+                </div>
+                <h4 class="text-xs font-bold text-violet-400 mt-1">
+                  Transaksi Penjualan (Sesuai UC-03)
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                  Menunjukkan interaksi antar objek (UI, Controller, Database)
+                  seiring berjalannya waktu saat memproses transaksi pembayaran
+                  pelanggan.
+                </p>
+              </div>
+            </div>
+
+            <!-- Detail Metadata Class -->
+            <div id="class-metadata-wrapper" class="mb-4 flex-shrink-0 hidden">
+              <div
+                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              >
+                <div
+                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
+                >
+                  Class Diagram Spec:
+                </div>
+                <h4 class="text-xs font-bold text-sky-400 mt-1">
+                  Struktur Database & Objek OOP
+                </h4>
+                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+                  Klik pada elemen kotak kelas di sebelah kiri untuk melihat
+                  rincian pemodelan data berorientasi objek serta implementasi
+                  kodenya.
                 </p>
               </div>
             </div>
@@ -699,7 +1058,7 @@
               class="flex-1 overflow-y-auto pr-1 space-y-4 text-xs"
               id="sop-document-container"
             >
-              <!-- Konten akan dimuat via JS -->
+              <!-- Konten dinamis dimuat via Javascript -->
             </div>
           </div>
         </div>
@@ -715,7 +1074,7 @@
         <p class="flex items-center gap-2">
           Teknik Informatika
           <span class="w-1.5 h-1.5 rounded-full bg-slate-700"></span> Analisis
-          dan Desain Perangkat Lunak
+          dan Perancangan Sistem Informasi (APSI)
         </p>
       </div>
     </footer>
@@ -730,42 +1089,79 @@
 
         const tabUsecase = document.getElementById("tab-usecase");
         const tabActivity = document.getElementById("tab-activity");
+        const tabSequence = document.getElementById("tab-sequence");
+        const tabClass = document.getElementById("tab-class");
+
         const usecaseView = document.getElementById("usecase-canvas-view");
         const activityView = document.getElementById("activity-canvas-view");
+        const sequenceView = document.getElementById("sequence-canvas-view");
+        const classView = document.getElementById("class-canvas-view");
+
         const selectWrapper = document.getElementById("usecase-select-wrapper");
         const activityWrapper = document.getElementById(
           "activity-metadata-wrapper",
         );
+        const sequenceWrapper = document.getElementById(
+          "sequence-metadata-wrapper",
+        );
+        const classWrapper = document.getElementById("class-metadata-wrapper");
+
         const panelTitle = document.getElementById("panel-title");
+
+        // Reset tab styles
+        [tabUsecase, tabActivity, tabSequence, tabClass].forEach((t) => {
+          t.className =
+            "px-2.5 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white";
+        });
+
+        // Hide all views
+        [usecaseView, activityView, sequenceView, classView].forEach((v) => {
+          if (v) v.classList.add("hidden");
+        });
+
+        // Hide all wrappers
+        [selectWrapper, activityWrapper, sequenceWrapper, classWrapper].forEach(
+          (w) => {
+            if (w) w.classList.add("hidden");
+          },
+        );
 
         if (tab === "usecase") {
           tabUsecase.className =
-            "px-3 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white";
-          tabActivity.className =
-            "px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white";
-          usecaseView.classList.remove("hidden");
-          activityView.classList.add("hidden");
-          selectWrapper.classList.remove("hidden");
-          activityWrapper.classList.add("hidden");
+            "px-2.5 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white";
+          if (usecaseView) usecaseView.classList.remove("hidden");
+          if (selectWrapper) selectWrapper.classList.remove("hidden");
           panelTitle.innerText = "Use Case Description";
           inspectUseCase("uc01");
           setTimeout(drawUseCases, 50);
-        } else {
+        } else if (tab === "activity") {
           tabActivity.className =
-            "px-3 py-1.5 text-xs font-semibold rounded-md transition bg-emerald-600 text-white";
-          tabUsecase.className =
-            "px-3 py-1.5 text-xs font-semibold rounded-md transition text-slate-400 hover:text-white";
-          activityView.classList.remove("hidden");
-          usecaseView.classList.add("hidden");
-          selectWrapper.classList.add("hidden");
-          activityWrapper.classList.remove("hidden");
+            "px-2.5 py-1.5 text-xs font-semibold rounded-md transition bg-emerald-600 text-white";
+          if (activityView) activityView.classList.remove("hidden");
+          if (activityWrapper) activityWrapper.classList.remove("hidden");
           panelTitle.innerText = "Activity Specification";
           inspectActivityStep("idle");
           setTimeout(drawActivityLines, 50);
+        } else if (tab === "sequence") {
+          tabSequence.className =
+            "px-2.5 py-1.5 text-xs font-semibold rounded-md transition bg-violet-600 text-white";
+          if (sequenceView) sequenceView.classList.remove("hidden");
+          if (sequenceWrapper) sequenceWrapper.classList.remove("hidden");
+          panelTitle.innerText = "Sequence Step Info";
+          inspectSequenceStep("ready");
+          setTimeout(drawSequenceDiagram, 50);
+        } else if (tab === "class") {
+          tabClass.className =
+            "px-2.5 py-1.5 text-xs font-semibold rounded-md transition bg-sky-600 text-white";
+          if (classView) classView.classList.remove("hidden");
+          if (classWrapper) classWrapper.classList.remove("hidden");
+          panelTitle.innerText = "Class Inspector & Code";
+          inspectClass("class-user");
+          setTimeout(drawClassLines, 50);
         }
       }
 
-      // Database Dokumen Use Case Description (SOP) Lengkap
+      // === DATA USE CASE ===
       const useCaseDatabase = {
         uc01: {
           id: "UC-01",
@@ -896,7 +1292,7 @@
         },
       };
 
-      // Posisi Koordinat Awal untuk Reset
+      // Posisi Koordinat Default Use Case & Class
       const defaultPositions = {
         "actor-kasir": { x: 50, y: 180 },
         "actor-admin": { x: 810, y: 90 },
@@ -908,17 +1304,22 @@
         "usecase-diskon": { x: 570, y: 350 },
         "usecase-restock": { x: 410, y: 410 },
         "usecase-laporan": { x: 410, y: 490 },
+        // Coordinates for classes
+        "class-user": { x: 60, y: 60 },
+        "class-transaksi": { x: 380, y: 60 },
+        "class-detail": { x: 380, y: 290 },
+        "class-barang": { x: 710, y: 290 },
+        "class-member": { x: 710, y: 60 },
       };
 
-      // Menginisialisasi Sistem Drag and Drop
+      // Menginisialisasi Sistem Drag and Drop Use Case & Class Diagram
       document
-        .querySelectorAll(".actor-box, .usecase-oval")
+        .querySelectorAll(".actor-box, .usecase-oval, .class-box")
         .forEach((element) => {
           element.addEventListener("mousedown", startDrag);
           element.addEventListener("touchstart", startDrag, { passive: false });
 
-          // Event klik untuk membuka deskripsi
-          element.addEventListener("click", () => {
+          element.addEventListener("click", (e) => {
             let id = element.id;
             if (id.startsWith("usecase-")) {
               const key = id.replace("usecase-", "");
@@ -935,6 +1336,8 @@
               inspectUseCase(mapKey);
             } else if (id.startsWith("actor-")) {
               logActorAccess(id.replace("actor-", ""));
+            } else if (id.startsWith("class-")) {
+              inspectClass(id);
             }
           });
         });
@@ -944,7 +1347,8 @@
         startY = 0;
 
       function startDrag(e) {
-        e.preventDefault();
+        if (e.target.tagName === "SELECT" || e.target.tagName === "OPTION")
+          return;
         activeDragNode = this;
 
         const clientX = e.type.startsWith("touch")
@@ -974,7 +1378,7 @@
           ? e.touches[0].clientY
           : e.clientY;
 
-        const container = document.getElementById("usecase-capture-area");
+        const container = activeDragNode.parentElement;
         let newX = clientX - startX;
         let newY = clientY - startY;
 
@@ -990,7 +1394,11 @@
         activeDragNode.style.left = newX + "px";
         activeDragNode.style.top = newY + "px";
 
-        drawUseCases();
+        if (currentTab === "usecase") {
+          drawUseCases();
+        } else if (currentTab === "class") {
+          drawClassLines();
+        }
       }
 
       function stopDrag() {
@@ -999,11 +1407,11 @@
         document.removeEventListener("touchmove", drag);
       }
 
-      // Menggambar garis Use Case
+      // === DRAW USE CASE LINES ===
       function drawUseCases() {
         if (currentTab !== "usecase") return;
         const svg = document.getElementById("usecase-svg");
-
+        if (!svg) return;
         const oldLines = svg.querySelectorAll("path, text");
         oldLines.forEach((l) => l.remove());
 
@@ -1044,7 +1452,6 @@
       function drawUmlLine(svg, fromId, toId, label, type) {
         const elFrom = document.getElementById(fromId);
         const elTo = document.getElementById(toId);
-
         if (!elFrom || !elTo) return;
 
         const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
@@ -1095,58 +1502,59 @@
         if (!data) return;
 
         const container = document.getElementById("sop-document-container");
+        if (!container) return;
 
         let htmlContent = `
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
-                        <span class="text-violet-400 font-mono font-bold">${data.id}</span>
-                        <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">UML Spec</span>
-                    </div>
-                    <h4 class="text-sm font-bold text-white mb-1">${data.name}</h4>
-                    <p class="text-slate-400 text-[11px] leading-relaxed mb-3">${data.desc}</p>
-                    
-                    <div class="grid grid-cols-1 gap-2 border-t border-slate-800/60 pt-3">
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-slate-500">Aktor Utama:</span>
-                            <p class="text-slate-300 font-semibold mt-0.5">${data.actor}</p>
-                        </div>
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-slate-500">Prasyarat (Pre-Condition):</span>
-                            <p class="text-slate-300 mt-0.5">${data.pre}</p>
-                        </div>
-                        <div>
-                            <span class="text-[10px] uppercase font-bold text-slate-500">Kondisi Akhir (Post-Condition):</span>
-                            <p class="text-slate-300 mt-0.5">${data.post}</p>
-                        </div>
-                    </div>
-                </div>
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                  <span class="text-violet-400 font-mono font-bold">${data.id}</span>
+                  <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">UML Spec</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mb-1">${data.name}</h4>
+              <p class="text-slate-400 text-[11px] leading-relaxed mb-3">${data.desc}</p>
+              
+              <div class="grid grid-cols-1 gap-2 border-t border-slate-800/60 pt-3">
+                  <div>
+                      <span class="text-[10px] uppercase font-bold text-slate-500">Aktor Utama:</span>
+                      <p class="text-slate-300 font-semibold mt-0.5">${data.actor}</p>
+                  </div>
+                  <div>
+                      <span class="text-[10px] uppercase font-bold text-slate-500">Prasyarat (Pre-Condition):</span>
+                      <p class="text-slate-300 mt-0.5">${data.pre}</p>
+                  </div>
+                  <div>
+                      <span class="text-[10px] uppercase font-bold text-slate-500">Kondisi Akhir (Post-Condition):</span>
+                      <p class="text-slate-300 mt-0.5">${data.post}</p>
+                  </div>
+              </div>
+          </div>
 
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Sukses Utama (Main Flow):</h5>
-                    <ol class="list-decimal pl-4 space-y-1.5 text-slate-300">
-            `;
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Sukses Utama (Main Flow):</h5>
+              <ol class="list-decimal pl-4 space-y-1.5 text-slate-300">
+        `;
 
         data.main.forEach((step) => {
           htmlContent += `<li>${step}</li>`;
         });
 
         htmlContent += `
-                    </ol>
-                </div>
+              </ol>
+          </div>
 
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Alternatif & Eror (Exception Flow):</h5>
-                    <div class="space-y-2 text-slate-400 leading-relaxed">
-            `;
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Alur Alternatif & Eror (Exception Flow):</h5>
+              <div class="space-y-2 text-slate-400 leading-relaxed">
+        `;
 
         data.exception.forEach((exc) => {
           htmlContent += `<p class="border-l-2 border-rose-500/40 pl-2 py-0.5 bg-rose-500/[0.02]">${exc}</p>`;
         });
 
         htmlContent += `
-                    </div>
-                </div>
-            `;
+              </div>
+          </div>
+        `;
 
         container.innerHTML = htmlContent;
 
@@ -1180,6 +1588,7 @@
       // Log info aktor
       function logActorAccess(role) {
         const container = document.getElementById("sop-document-container");
+        if (!container) return;
         let desc = "";
         let color = "text-emerald-400";
 
@@ -1198,39 +1607,22 @@
         }
 
         container.innerHTML = `
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <span class="text-[10px] uppercase font-bold text-slate-500">Profil Aktor</span>
-                    <h4 class="text-sm font-bold ${color} mt-1 mb-2 uppercase">${role.toUpperCase()}</h4>
-                    <p class="text-slate-300 leading-relaxed">${desc}</p>
-                </div>
-            `;
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <span class="text-[10px] uppercase font-bold text-slate-500">Profil Aktor</span>
+              <h4 class="text-sm font-bold ${color} mt-1 mb-2 uppercase">${role.toUpperCase()}</h4>
+              <p class="text-slate-300 leading-relaxed">${desc}</p>
+          </div>
+        `;
       }
 
-      // Reset Posisi
-      function resetElements() {
-        if (currentTab === "usecase") {
-          for (const [id, pos] of Object.entries(defaultPositions)) {
-            const el = document.getElementById(id);
-            if (el) {
-              el.style.left = pos.x + "px";
-              el.style.top = pos.y + "px";
-            }
-          }
-          drawUseCases();
-        }
-      }
-
-      // ================= ACTIVITY DIAGRAM ENGINE =================
-
+      // === ACTIVITY DIAGRAM ENGINE ===
       function drawActivityLines() {
         if (currentTab !== "activity") return;
         const svg = document.getElementById("activity-svg");
-
-        // Bersihkan jalur lama
+        if (!svg) return;
         const oldLines = svg.querySelectorAll("path, text");
         oldLines.forEach((l) => l.remove());
 
-        // Alur Berurutan Logis
         const connections = [
           { from: "act-start", to: "act-node-1" },
           { from: "act-node-1", to: "act-node-2" },
@@ -1254,11 +1646,8 @@
         const elFrom = document.getElementById(fromId);
         const elTo = document.getElementById(toId);
         const container = document.getElementById("activity-capture-area");
-
         if (!elFrom || !elTo || !container) return;
 
-        // Seluruh elemen diposisikan absolut langsung di dalam `activity-capture-area`
-        // Sehingga koordinatnya sangat sederhana & bebas overlap
         const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
         const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
         const x2 = elTo.offsetLeft + elTo.offsetWidth / 2;
@@ -1271,22 +1660,16 @@
           "http://www.w3.org/2000/svg",
           "path",
         );
-        path.setAttribute("class", "act-flow-line");
         path.setAttribute("id", `flow-${fromId}-${toId}`);
 
         let d = "";
-
-        // Logika penggambaran garis siku-siku (Orthogonal) yang rapi
         if (Math.abs(x1 - x2) < 30) {
-          // Jalur lurus vertikal searah
           d = `M ${x1} ${fromBottom} L ${x2} ${toTop}`;
         } else {
-          // Jalur belok pindah swimlane
           if (toTop > fromBottom) {
             const midY = (fromBottom + toTop) / 2;
             d = `M ${x1} ${fromBottom} V ${midY} H ${x2} V ${toTop}`;
           } else {
-            // Jalur horizontal horizontal sejajar (Decision ke Error Node)
             d = `M ${x1} ${y1} H ${x2}`;
           }
         }
@@ -1325,72 +1708,71 @@
         }
       }
 
-      // Inspeksi Panel Kanan untuk Info Detail Setiap Aktivitas
       const activityDescriptions = {
         idle: {
           step: "Ready",
-          title: "Silakan Memulai Simulasi",
-          desc: "Klik tombol 'Simulasikan Alur' di bagian atas kanvas untuk melihat jalannya token aktivitas berpindah secara interaktif dari satu penanggung jawab (Kasir) ke sistem backend (Sistem).",
+          title: "SOP Transaksi Point Of Sale",
+          desc: "Klik tombol 'Simulasikan Alur' untuk melihat pergerakan transaksional antara kasir dan sistem POS secara teratur.",
         },
         "act-start": {
           step: "01",
-          title: "Initial Node (Titik Mulai)",
-          desc: "Mengindikasikan mulainya sebuah workflow aktivitas operasional pada mesin POS kasir minimarket.",
+          title: "Mulai SOP",
+          desc: "Workflow dimulai ketika kasir bersiap memproses belanjaan pelanggan.",
         },
         "act-node-1": {
           step: "02",
-          title: "Kasir: Membuka Menu Penjualan",
-          desc: "Kasir mengklik halaman POS penjualan pada layar perangkat untuk membuka form input keranjang belanja aktif baru.",
+          title: "Membuka Menu Penjualan",
+          desc: "Kasir mengaktifkan halaman transaksi kasir untuk menginisialisasi sesi baru.",
         },
         "act-node-2": {
           step: "03",
-          title: "Kasir: Memindai Barcode Produk",
-          desc: "Kasir menggunakan alat pemindai fisik (barcode scanner) untuk membaca data kode batang yang tertera di kemasan barang belanjaan pelanggan.",
+          title: "Memindai Barcode Produk",
+          desc: "Kasir memindai barcode fisik pada kemasan produk menggunakan scanner.",
         },
         "act-node-3": {
           step: "04",
-          title: "Sistem: Mencari Data Barang & Cek Stok",
-          desc: "Sistem backend langsung mencocokkan kode barcode yang dikirimkan ke data server pusat untuk mencari nama produk, harga dasar, serta memastikan ketersediaan kuantitas stok saat ini.",
+          title: "Mencari Data Barang & Cek Stok",
+          desc: "Sistem mengakses database katalog barang untuk memverifikasi nama, harga, dan level stok.",
         },
         "act-dec-1": {
           step: "05",
-          title: "Decision Node: Apakah Stok Tersedia?",
-          desc: "Sistem mengevaluasi kondisi logika: jika angka stok barang <= 0, alur dibelokkan ke penanganan kegagalan (Stok Kosong). Jika stok > 0, lanjut ke kalkulasi harga.",
+          title: "Decision Node",
+          desc: "Sistem menguji ketersediaan stok barang. Jika kosong, lanjut ke alur error; jika ada, lanjut ke keranjang.",
         },
         "act-node-err": {
           step: "05.a",
-          title: "Sistem: Notifikasi Stok Habis",
-          desc: "Sistem menampilkan alert kesalahan berwarna merah di layar kasir untuk mengindikasikan barang tidak dapat dimasukkan ke keranjang belanja.",
+          title: "Notifikasi Stok Kosong",
+          desc: "Sistem mengembalikan informasi bahwa item tidak dapat diproses karena ketiadaan fisik barang.",
         },
         "act-end-err": {
           step: "05.b",
-          title: "SOP Selesai (Eror)",
-          desc: "Alur transaksi dihentikan karena produk yang dipindai tidak memiliki persediaan fisik di rak minimarket.",
+          title: "SOP Berhenti (Error)",
+          desc: "Sesi input barang terputus akibat stok habis.",
         },
         "act-node-4": {
           step: "06",
-          title: "Sistem: Hitung Total & PPN",
-          desc: "Sistem memasukkan barang ke keranjang belanja virtual, mengakumulasi total belanja, serta menghitung pajak PPN 11% secara otomatis.",
+          title: "Hitung Total & PPN",
+          desc: "Sistem menjumlahkan total belanjaan aktif dan menambahkan PPN sebesar 11%.",
         },
         "act-node-5": {
           step: "07",
-          title: "Kasir: Menerima Input Pembayaran",
-          desc: "Kasir menerima nominal uang pembayaran fisik dari pelanggan (atau menyodorkan kode QRIS) dan menginputkannya ke form pembayaran sistem.",
+          title: "Menerima Pembayaran",
+          desc: "Kasir menginputkan jumlah pembayaran yang diterima (Uang tunai atau validasi QRIS).",
         },
         "act-node-6": {
           step: "08",
-          title: "Sistem: Update Database & Stok",
-          desc: "Sistem mengonfirmasi pembayaran sah, menyimpan log ke tabel transaksi, dan langsung memotong saldo stok produk di gudang digital.",
+          title: "Potong Stok & Simpan Transaksi",
+          desc: "Sistem melakukan update data stok secara aman dan merekam transaksi di tabel Penjualan.",
         },
         "act-node-7": {
           step: "09",
-          title: "Sistem: Cetak Struk Belanja",
-          desc: "Sistem mengirimkan trigger dokumen cetak ke perangkat printer untuk menerbitkan kertas bukti pembayaran fisik.",
+          title: "Cetak Struk Belanja",
+          desc: "Printer POS mengeluarkan bukti transaksi belanja fisik untuk pembeli.",
         },
         "act-end": {
           step: "10",
-          title: "Final Activity Node (Selesai)",
-          desc: "Mengindikasikan akhir siklus dari aktivitas transaksi transaksi ritel secara sukses.",
+          title: "Transaksi Sukses",
+          desc: "Proses transaksi dinyatakan selesai dengan sukses.",
         },
       };
 
@@ -1399,70 +1781,58 @@
         if (!data) return;
 
         const container = document.getElementById("sop-document-container");
+        if (!container) return;
         container.innerHTML = `
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
-                        <span class="text-emerald-400 font-mono font-bold">Langkah ${data.step}</span>
-                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-bold uppercase">SOP LOGIC</span>
-                    </div>
-                    <h4 class="text-sm font-bold text-white mb-2">${data.title}</h4>
-                    <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
-                </div>
-                <div class="bg-slate-900/30 p-4 rounded-xl border border-slate-800/60 border-dashed text-slate-400 text-center text-[11px]">
-                    Tekan tombol "Simulasikan Alur" di bagian atas kanvas untuk melihat demonstrasi token transaksional secara otomatis.
-                </div>
-            `;
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                  <span class="text-emerald-400 font-mono font-bold">Langkah ${data.step}</span>
+                  <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-bold uppercase">SOP LOGIC</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mb-2">${data.title}</h4>
+              <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
+          </div>
+        `;
       }
 
-      // Simulator Token Alur Activity Diagram
       let activeTimeoutIds = [];
       function startActivitySimulation() {
-        // Bersihkan timer lama jika ada
         activeTimeoutIds.forEach(clearTimeout);
         activeTimeoutIds = [];
 
-        // Kembalikan semua node ke warna semula
         document
           .querySelectorAll(
             ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
           )
           .forEach((node) => {
             node.classList.remove("active-token");
-            node.style.borderColor = "";
           });
 
-        // Alur jalannya token simulasi sukses
         const steps = [
           { id: "act-start", delay: 0 },
-          { id: "act-node-1", delay: 1200 },
-          { id: "act-node-2", delay: 2400 },
-          { id: "act-node-3", delay: 3600 },
-          { id: "act-dec-1", delay: 4800 },
-          { id: "act-node-4", delay: 6000 },
-          { id: "act-node-5", delay: 7200 },
-          { id: "act-node-6", delay: 8400 },
-          { id: "act-node-7", delay: 9600 },
-          { id: "act-end", delay: 10800 },
+          { id: "act-node-1", delay: 1000 },
+          { id: "act-node-2", delay: 2000 },
+          { id: "act-node-3", delay: 3000 },
+          { id: "act-dec-1", delay: 4000 },
+          { id: "act-node-4", delay: 5000 },
+          { id: "act-node-5", delay: 6000 },
+          { id: "act-node-6", delay: 7000 },
+          { id: "act-node-7", delay: 8000 },
+          { id: "act-end", delay: 9000 },
         ];
 
         steps.forEach((step) => {
           const tId = setTimeout(() => {
-            // Matikan highlight sebelumnya
             document
               .querySelectorAll(
                 ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
               )
               .forEach((node) => {
                 node.classList.remove("active-token");
-                node.style.borderColor = "";
               });
 
             const node = document.getElementById(step.id);
             if (node) {
               node.classList.add("active-token");
-              if (step.id === "act-dec-1") {
-                node.style.borderColor = "#10b981";
-              }
               node.scrollIntoView({ behavior: "smooth", block: "center" });
             }
             inspectActivityStep(step.id);
@@ -1471,22 +1841,615 @@
         });
       }
 
-      // Ekspor Diagram Aktif (Use Case / Activity)
-      function exportActiveDiagram() {
-        const captureId =
-          currentTab === "usecase"
-            ? "usecase-capture-area"
-            : "activity-capture-area";
-        const filename =
-          currentTab === "usecase"
-            ? "UseCase_Diagram_Raffi.png"
-            : "Activity_Diagram_Raffi.png";
-        const targetElement = document.getElementById(captureId);
+      // === SEQUENCE DIAGRAM ENGINE ===
+      const sequenceMessages = [
+        {
+          from: 110,
+          to: 310,
+          y: 110,
+          label: "1. bukaMenuPenjualan()",
+          type: "call",
+        },
+        {
+          from: 110,
+          to: 310,
+          y: 150,
+          label: "2. scanBarcode(kode)",
+          type: "call",
+        },
+        {
+          from: 310,
+          to: 530,
+          y: 190,
+          label: "3. cariBarang(kode)",
+          type: "call",
+        },
+        {
+          from: 530,
+          to: 750,
+          y: 230,
+          label: "4. selectStok & Harga",
+          type: "call",
+        },
+        {
+          from: 750,
+          to: 530,
+          y: 270,
+          label: "5. returnBarangData",
+          type: "return",
+        },
+        {
+          from: 530,
+          to: 310,
+          y: 310,
+          label: "6. kalkulasiTotal()",
+          type: "return",
+        },
+        {
+          from: 310,
+          to: 110,
+          y: 350,
+          label: "7. tampilkanBelanja()",
+          type: "return",
+        },
+        {
+          from: 110,
+          to: 310,
+          y: 390,
+          label: "8. bayarUang(nominal)",
+          type: "call",
+        },
+        {
+          from: 310,
+          to: 530,
+          y: 430,
+          label: "9. updateStok() & simpan()",
+          type: "call",
+        },
+        {
+          from: 530,
+          to: 750,
+          y: 460,
+          label: "10. commitTransaction",
+          type: "call",
+        },
+        {
+          from: 530,
+          to: 310,
+          y: 490,
+          label: "11. cetakStruk()",
+          type: "return",
+        },
+      ];
 
-        // Kloning aman off-screen
+      function drawSequenceDiagram() {
+        if (currentTab !== "sequence") return;
+        const svg = document.getElementById("sequence-svg");
+        if (!svg) return;
+
+        // Clear previous lines
+        const oldLines = svg.querySelectorAll(".seq-line, .seq-text");
+        oldLines.forEach((l) => l.remove());
+
+        sequenceMessages.forEach((msg, idx) => {
+          const path = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          );
+          path.setAttribute("class", "seq-line transition-all duration-300");
+          path.setAttribute("id", `seq-msg-${idx}`);
+          path.setAttribute("d", `M ${msg.from} ${msg.y} L ${msg.to} ${msg.y}`);
+
+          if (msg.type === "call") {
+            path.setAttribute("stroke", "#38bdf8");
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("marker-end", "url(#seq-arrow)");
+          } else {
+            path.setAttribute("stroke", "#94a3b8");
+            path.setAttribute("stroke-width", "1.5");
+            path.setAttribute("stroke-dasharray", "4,4");
+            path.setAttribute("marker-end", "url(#seq-return)");
+          }
+
+          svg.appendChild(path);
+
+          const text = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          text.setAttribute(
+            "class",
+            "seq-text font-mono font-medium text-[10px] select-none",
+          );
+          text.setAttribute("id", `seq-txt-${idx}`);
+          text.setAttribute("x", (msg.from + msg.to) / 2);
+          text.setAttribute("y", msg.y - 6);
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("fill", "#cbd5e1");
+          text.textContent = msg.label;
+
+          svg.appendChild(text);
+        });
+      }
+
+      const sequenceStepsDesc = {
+        ready: {
+          step: "Info",
+          title: "Skenario Sequence Diagram",
+          desc: "Alur pesan sinkron dari atas ke bawah. Tekan tombol simulasi untuk melihat jalannya message call antar sistem secara real-time.",
+        },
+        0: {
+          step: "1",
+          title: "bukaMenuPenjualan()",
+          desc: "Kasir berinteraksi dengan antarmuka UI Penjualan untuk memulai form transaksi baru.",
+        },
+        1: {
+          step: "2",
+          title: "scanBarcode(kode)",
+          desc: "Kasir menginput kode barang hasil pindaian barcode scanner ke UI Penjualan.",
+        },
+        2: {
+          step: "3",
+          title: "cariBarang(kode)",
+          desc: "UI mengirim parameter kode barang ke Sistem_POS (Controller) untuk diverifikasi.",
+        },
+        3: {
+          step: "4",
+          title: "selectStok & Harga",
+          desc: "Sistem_POS melakukan query pencocokan ke Database (Entity Barang).",
+        },
+        4: {
+          step: "5",
+          title: "returnBarangData",
+          desc: "Database mengembalikan record data nama barang, harga, dan sisa stok.",
+        },
+        5: {
+          step: "6",
+          title: "kalkulasiTotal()",
+          desc: "Sistem_POS memproses subtotal beserta kalkulasi PPN 11%.",
+        },
+        6: {
+          step: "7",
+          title: "tampilkanBelanja()",
+          desc: "UI merender informasi barang yang ditambahkan beserta total nominal pada layar monitor kasir.",
+        },
+        7: {
+          step: "8",
+          title: "bayarUang(nominal)",
+          desc: "Kasir memasukkan jumlah pembayaran tunai dari pelanggan ke sistem.",
+        },
+        8: {
+          step: "9",
+          title: "updateStok() & simpan()",
+          desc: "Sistem_POS memicu pengurangan stok digital dan merekam faktur penjualan baru.",
+        },
+        9: {
+          step: "10",
+          title: "commitTransaction",
+          desc: "Database melakukan penyimpanan permanen atas transaksi dan tabel persediaan.",
+        },
+        10: {
+          step: "11",
+          title: "cetakStruk()",
+          desc: "Sistem mengirimkan perintah cetak fisik ke mesin printer kasir, mengakhiri siklus penjualan.",
+        },
+      };
+
+      function inspectSequenceStep(idx) {
+        const data = sequenceStepsDesc[idx];
+        if (!data) return;
+
+        const container = document.getElementById("sop-document-container");
+        if (!container) return;
+        container.innerHTML = `
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-3">
+                  <span class="text-violet-400 font-mono font-bold">Pesan #${data.step}</span>
+                  <span class="text-[10px] bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 font-bold uppercase">SEQUENCE MESSAGE</span>
+              </div>
+              <h4 class="text-sm font-bold text-white mb-2">${data.title}</h4>
+              <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
+          </div>
+        `;
+      }
+
+      function startSequenceSimulation() {
+        activeTimeoutIds.forEach(clearTimeout);
+        activeTimeoutIds = [];
+
+        // Reset styles first
+        document
+          .querySelectorAll(".activation-bar")
+          .forEach((bar) => bar.classList.remove("active"));
+        const svg = document.getElementById("sequence-svg");
+        if (svg) {
+          svg.querySelectorAll(".seq-line").forEach((l) => {
+            l.setAttribute(
+              "stroke",
+              l.getAttribute("stroke-dasharray") ? "#94a3b8" : "#38bdf8",
+            );
+            l.setAttribute(
+              "stroke-width",
+              l.getAttribute("stroke-dasharray") ? "1.5" : "2",
+            );
+          });
+          svg
+            .querySelectorAll(".seq-text")
+            .forEach((t) => t.setAttribute("fill", "#cbd5e1"));
+        }
+
+        let delays = [
+          0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000,
+        ];
+
+        delays.forEach((delay, idx) => {
+          const tId = setTimeout(() => {
+            // Highlight lifeline activation bars based on current step
+            const actKasir = document.getElementById("act-bar-kasir");
+            const actUI = document.getElementById("act-bar-ui");
+            const actCtrl = document.getElementById("act-bar-controller");
+            const actDb = document.getElementById("act-bar-db");
+
+            // Turn on active activations
+            if (idx >= 0 && actKasir) actKasir.classList.add("active");
+            if (idx >= 1 && actUI) actUI.classList.add("active");
+            if (idx >= 2 && actCtrl) actCtrl.classList.add("active");
+            if (idx >= 3 && idx <= 4 && actDb) actDb.classList.add("active");
+            if (idx >= 9 && actDb) actDb.classList.add("active");
+
+            // Highlight line
+            const activeLine = document.getElementById(`seq-msg-${idx}`);
+            const activeText = document.getElementById(`seq-txt-${idx}`);
+            if (activeLine && activeText) {
+              activeLine.setAttribute("stroke", "#8b5cf6");
+              activeLine.setAttribute("stroke-width", "3");
+              activeText.setAttribute("fill", "#a78bfa");
+              activeLine.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+
+            inspectSequenceStep(idx);
+          }, delay);
+          activeTimeoutIds.push(tId);
+        });
+      }
+
+      // === CLASS DIAGRAM ENGINE ===
+      function drawClassLines() {
+        if (currentTab !== "class") return;
+        const svg = document.getElementById("class-svg");
+        if (!svg) return;
+
+        // Clear old paths
+        const oldPaths = svg.querySelectorAll("path, text");
+        oldPaths.forEach((p) => p.remove());
+
+        // Relationships:
+        // 1. User -> Transaksi (Asosiasi)
+        // 2. Transaksi -> DetailTransaksi (Komposisi)
+        // 3. DetailTransaksi -> Barang (Asosiasi)
+        // 4. Transaksi -> Member (Asosiasi opsional)
+
+        const relationships = [
+          {
+            from: "class-user",
+            to: "class-transaksi",
+            label: "membuat",
+            type: "association",
+          },
+          {
+            from: "class-transaksi",
+            to: "class-detail",
+            label: "1..*",
+            type: "composition",
+          },
+          {
+            from: "class-detail",
+            to: "class-barang",
+            label: "memiliki",
+            type: "association",
+          },
+          {
+            from: "class-transaksi",
+            to: "class-member",
+            label: "0..1",
+            type: "association",
+          },
+        ];
+
+        relationships.forEach((rel) => {
+          drawClassRelationship(svg, rel.from, rel.to, rel.label, rel.type);
+        });
+      }
+
+      function drawClassRelationship(svg, fromId, toId, label, type) {
+        const elFrom = document.getElementById(fromId);
+        const elTo = document.getElementById(toId);
+        if (!elFrom || !elTo) return;
+
+        const x1 = elFrom.offsetLeft + elFrom.offsetWidth / 2;
+        const y1 = elFrom.offsetTop + elFrom.offsetHeight / 2;
+        const x2 = elTo.offsetLeft + elTo.offsetWidth / 2;
+        const y2 = elTo.offsetTop + elTo.offsetHeight / 2;
+
+        const path = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
+        let d = "";
+
+        // Menggambar garis belokan orthogonal yang rapi
+        if (Math.abs(x1 - x2) > Math.abs(y1 - y2)) {
+          d = `M ${x1} ${y1} H ${(x1 + x2) / 2} V ${y2} H ${x2}`;
+        } else {
+          d = `M ${x1} ${y1} V ${(y1 + y2) / 2} H ${x2} V ${y2}`;
+        }
+
+        path.setAttribute("d", d);
+        path.setAttribute(
+          "stroke",
+          type === "composition" ? "#38bdf8" : "#475569",
+        );
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("fill", "none");
+
+        if (type === "composition") {
+          path.setAttribute("marker-start", "url(#composition)");
+        }
+
+        svg.appendChild(path);
+
+        if (label) {
+          const text = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          text.setAttribute("x", (x1 + x2) / 2 + 10);
+          text.setAttribute("y", (y1 + y2) / 2 - 4);
+          text.setAttribute("fill", "#94a3b8");
+          text.setAttribute("font-size", "10px");
+          text.setAttribute("class", "font-mono select-none");
+          text.textContent = label;
+          svg.appendChild(text);
+        }
+      }
+
+      const classSpecs = {
+        "class-user": {
+          name: "User Class",
+          desc: "Menangani hak otorisasi akun pengguna aplikasi POS (Kasir, Admin, Manajer).",
+          attr: [
+            "id_user (Int): ID unik user",
+            "nama (String): Nama lengkap user",
+            "username (String): Username unik login",
+            "password (String): Sandi login (hashed)",
+            "role (String): Peran otorisasi (Kasir/Admin/Manajer)",
+          ],
+          methods: [
+            "login(): Memvalidasi login user ke db.",
+            "logout(): Mengakhiri sesi pengguna aktif.",
+          ],
+          code: `// Implementasi Java (OOP)
+public class User {
+    private int idUser;
+    private String nama;
+    private String username;
+    private String password;
+    private String role;
+
+    public boolean login() {
+        // Logika verifikasi database
+        return true;
+    }
+}`,
+        },
+        "class-transaksi": {
+          name: "Transaksi Class",
+          desc: "Merepresentasikan entitas utama transaksi penjualan di kasir.",
+          attr: [
+            "id_transaksi (String): Nomor faktur unik",
+            "tgl_transaksi (Date): Tanggal dan jam beli",
+            "total_bayar (Double): Total nilai setelah pajak",
+            "ppn (Double): Pajak PPN (11%)",
+          ],
+          methods: [
+            "hitungTotal(): Menghitung total plus PPN.",
+            "simpanTransaksi(): Commit record data ke DB.",
+            "cetakStruk(): Trigger output ke printer fisik.",
+          ],
+          code: `// Implementasi Java (OOP)
+public class Transaksi {
+    private String idTransaksi;
+    private Date tglTransaksi;
+    private double totalBayar;
+    private double ppn = 0.11;
+
+    public double hitungTotal() {
+        double subtotal = 0;
+        // Hitung total dari detail...
+        this.totalBayar = subtotal * (1 + ppn);
+        return this.totalBayar;
+    }
+}`,
+        },
+        "class-detail": {
+          name: "DetailTransaksi Class",
+          desc: "Menghubungkan Transaksi dengan banyak objek Barang (Komposisi).",
+          attr: [
+            "id_detail (Int): ID detail",
+            "jumlah (Int): Jumlah pcs barang yang dibeli",
+            "subtotal (Double): Harga total item barang",
+          ],
+          methods: [
+            "hitungSubtotal(): menghitung (jumlah * harga_jual) barang.",
+          ],
+          code: `// Implementasi Java (OOP)
+public class DetailTransaksi {
+    private int idDetail;
+    private int jumlah;
+    private double subtotal;
+    private Barang barang;
+
+    public double hitungSubtotal() {
+        this.subtotal = this.jumlah * barang.getHargaJual();
+        return this.subtotal;
+    }
+}`,
+        },
+        "class-barang": {
+          name: "Barang Class",
+          desc: "Menyimpan data master barang dagangan minimarket.",
+          attr: [
+            "kode_barang (String): Barcode produk unik",
+            "nama_barang (String): Label merk produk",
+            "harga_jual (Double): Harga eceran konsumen",
+            "stok (Int): Kuantitas fisik tersisa",
+          ],
+          methods: [
+            "updateStok(qty): Kurangi/tambah kuantitas stok DB.",
+            "cekStok(): Mengembalikan sisa stok.",
+          ],
+          code: `// Implementasi Java (OOP)
+public class Barang {
+    private String kodeBarang;
+    private String namaBarang;
+    private double hargaJual;
+    private int stok;
+
+    public void updateStok(int qty) {
+        this.stok += qty; // Negatif jika penjualan
+    }
+}`,
+        },
+        "class-member": {
+          name: "Member Class",
+          desc: "Menyimpan database kartu keanggotaan loyalitas pelanggan.",
+          attr: [
+            "id_member (String): Nomor kartu member",
+            "nama (String): Nama member",
+            "poin (Int): Saldo akumulasi poin belanja",
+          ],
+          methods: [
+            "dapatkanDiskon(): Mengembalikan diskon 5%.",
+            "tambahPoin(total): Formula konversi total belanja jadi poin.",
+          ],
+          code: `// Implementasi Java (OOP)
+public class Member {
+    private String idMember;
+    private String nama;
+    private int poin;
+
+    public double dapatkanDiskon() {
+        return 0.05; // Potongan 5%
+    }
+}`,
+        },
+      };
+
+      function inspectClass(classId) {
+        const spec = classSpecs[classId];
+        if (!spec) return;
+
+        const container = document.getElementById("sop-document-container");
+        if (!container) return;
+
+        let attrHtml = "";
+        spec.attr.forEach((at) => {
+          attrHtml += `<li class="text-[11px] font-mono text-slate-300">${at}</li>`;
+        });
+
+        let methHtml = "";
+        spec.methods.forEach((me) => {
+          methHtml += `<li class="text-[11px] font-mono text-emerald-400">${me}</li>`;
+        });
+
+        container.innerHTML = `
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-mono text-sky-400 uppercase font-bold">Class Specification</span>
+              <h4 class="text-sm font-bold text-white mt-1 mb-1">${spec.name}</h4>
+              <p class="text-slate-400 text-[11px] leading-relaxed mb-3">${spec.desc}</p>
+              
+              <div class="border-t border-slate-800 pt-2.5 mt-2">
+                  <h5 class="text-[10px] uppercase font-bold text-slate-500 mb-1">Attributes:</h5>
+                  <ul class="list-disc pl-4 space-y-1">${attrHtml}</ul>
+              </div>
+
+              <div class="border-t border-slate-800 pt-2.5 mt-2">
+                  <h5 class="text-[10px] uppercase font-bold text-slate-500 mb-1">Methods / Functions:</h5>
+                  <ul class="list-disc pl-4 space-y-1">${methHtml}</ul>
+              </div>
+          </div>
+
+          <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+              <h5 class="text-[10px] uppercase font-bold text-slate-400 mb-2 font-mono">Kode Blueprint OOP:</h5>
+              <pre class="bg-slate-950 p-3 rounded-lg font-mono text-[10px] text-sky-300 overflow-x-auto whitespace-pre leading-normal">${spec.code}</pre>
+          </div>
+        `;
+
+        // Highlight class box
+        document.querySelectorAll(".class-box").forEach((box) => {
+          box.classList.remove("ring-4", "ring-sky-500/50");
+        });
+        const activeBox = document.getElementById(classId);
+        if (activeBox) {
+          activeBox.classList.add("ring-4", "ring-sky-500/50");
+        }
+      }
+
+      // === RESET POSITIONS ===
+      function resetElements() {
+        if (currentTab === "usecase") {
+          for (const [id, pos] of Object.entries(defaultPositions)) {
+            const el = document.getElementById(id);
+            if (el && (id.startsWith("usecase-") || id.startsWith("actor-"))) {
+              el.style.left = pos.x + "px";
+              el.style.top = pos.y + "px";
+            }
+          }
+          drawUseCases();
+        } else if (currentTab === "class") {
+          for (const [id, pos] of Object.entries(defaultPositions)) {
+            const el = document.getElementById(id);
+            if (el && id.startsWith("class-")) {
+              el.style.left = pos.x + "px";
+              el.style.top = pos.y + "px";
+            }
+          }
+          drawClassLines();
+        }
+      }
+
+      // === EXPORT PNG ===
+      function exportActiveDiagram() {
+        let captureId = "usecase-capture-area";
+        let filename = "UseCase_Diagram_Raffi.png";
+        let width = 1000;
+        let height = 600;
+
+        if (currentTab === "activity") {
+          captureId = "activity-scroll-pane";
+          filename = "Activity_Diagram_Raffi.png";
+          width = 800;
+          height = 850;
+        } else if (currentTab === "sequence") {
+          captureId = "sequence-capture-area";
+          filename = "Sequence_Diagram_Raffi.png";
+          width = 850;
+          height = 550;
+        } else if (currentTab === "class") {
+          captureId = "class-capture-area";
+          filename = "Class_Diagram_Raffi.png";
+          width = 1000;
+          height = 600;
+        }
+
+        const targetElement = document.getElementById(captureId);
+        if (!targetElement) return;
         const clone = targetElement.cloneNode(true);
-        clone.style.width = currentTab === "usecase" ? "1000px" : "720px";
-        clone.style.height = currentTab === "usecase" ? "600px" : "780px";
+        clone.style.width = width + "px";
+        clone.style.height = height + "px";
         clone.style.overflow = "visible";
         clone.style.position = "absolute";
         clone.style.top = "-9999px";
@@ -1498,8 +2461,8 @@
           scale: 2,
           logging: false,
           useCORS: true,
-          width: currentTab === "usecase" ? 1000 : 720,
-          height: currentTab === "usecase" ? 600 : 780,
+          width: width,
+          height: height,
         };
 
         html2canvas(clone, options)
@@ -1517,21 +2480,23 @@
             if (document.body.contains(clone)) {
               document.body.removeChild(clone);
             }
-            alert("Gagal mengunduh diagram: " + err);
+            console.error("Gagal mengekspor berkas:", err);
           });
       }
 
-      // Inisialisasi awal saat halaman terbuka
+      // === LIFE CYCLE INITIALIZER ===
       window.onload = () => {
         drawUseCases();
         inspectUseCase("uc01");
 
-        // Setup Resize Observer untuk dynamic SVG rendering
+        // Setup Resize Observer untuk rendering SVG dinamis
         const container = document.getElementById("diagram-canvas-container");
         if (container) {
           const observer = new ResizeObserver(() => {
             drawUseCases();
             drawActivityLines();
+            drawSequenceDiagram();
+            drawClassLines();
           });
           observer.observe(container);
         }
@@ -1540,6 +2505,8 @@
       window.onresize = () => {
         drawUseCases();
         drawActivityLines();
+        drawSequenceDiagram();
+        drawClassLines();
       };
     </script>
   </body>
