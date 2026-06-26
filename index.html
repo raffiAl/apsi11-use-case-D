@@ -984,73 +984,137 @@
               </select>
             </div>
 
-            <!-- Detail Metadata Activity -->
+            <!-- Dropdown Selektor Fitur Activity Diagram -->
             <div
               id="activity-metadata-wrapper"
               class="mb-4 flex-shrink-0 hidden"
             >
-              <div
-                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
+                >Pilih Langkah SOP Aktivitas:</label
               >
-                <div
-                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
-                >
-                  Spesifikasi Aktivitas:
-                </div>
-                <h4 class="text-xs font-bold text-emerald-400 mt-1">
-                  SOP Transaksi Point Of Sale
-                </h4>
-                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
-                  Mendeskripsikan alur aktivitas teratur saat kasir melakukan
-                  scan item belanjaan hingga proses pencetakan struk transaksi
-                  selesai.
-                </p>
-              </div>
+              <select
+                id="activity-selector"
+                onchange="inspectActivityStep(this.value)"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition"
+              >
+                <option value="idle">
+                  SOP Transaksi Point Of Sale (Pengantar)
+                </option>
+                <option value="act-start">
+                  Langkah 01: Mulai SOP (Initial Node)
+                </option>
+                <option value="act-node-1">
+                  Langkah 02: Membuka Menu Penjualan
+                </option>
+                <option value="act-node-2">
+                  Langkah 03: Memindai Barcode Produk
+                </option>
+                <option value="act-node-3">
+                  Langkah 04: Mencari Data Barang & Cek Stok
+                </option>
+                <option value="act-dec-1">
+                  Langkah 05: Decision (Apakah Stok Tersedia?)
+                </option>
+                <option value="act-node-err">
+                  Langkah 05.a: Notifikasi Stok Habis
+                </option>
+                <option value="act-end-err">
+                  Langkah 05.b: SOP Berhenti (Error)
+                </option>
+                <option value="act-node-4">
+                  Langkah 06: Hitung Total & PPN 11%
+                </option>
+                <option value="act-node-5">
+                  Langkah 07: Menerima Pembayaran
+                </option>
+                <option value="act-node-6">
+                  Langkah 08: Update Database & Stok
+                </option>
+                <option value="act-node-7">
+                  Langkah 09: Cetak Struk Belanja
+                </option>
+                <option value="act-end">
+                  Langkah 10: Selesai (Final Node)
+                </option>
+              </select>
             </div>
 
-            <!-- Detail Metadata Sequence -->
+            <!-- Dropdown Selektor Fitur Sequence Diagram -->
             <div
               id="sequence-metadata-wrapper"
               class="mb-4 flex-shrink-0 hidden"
             >
-              <div
-                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
+                >Pilih Langkah Komunikasi Sequence:</label
               >
-                <div
-                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
-                >
-                  Skenario Sequence:
-                </div>
-                <h4 class="text-xs font-bold text-violet-400 mt-1">
-                  Transaksi Penjualan (Sesuai UC-03)
-                </h4>
-                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
-                  Menunjukkan interaksi antar objek (UI, Controller, Database)
-                  seiring berjalannya waktu saat memproses transaksi pembayaran
-                  pelanggan.
-                </p>
-              </div>
+              <select
+                id="sequence-selector"
+                onchange="inspectSequenceStep(this.value)"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-violet-500 transition"
+              >
+                <option value="ready">
+                  Skenario Komunikasi Objek (Pengantar)
+                </option>
+                <option value="0">
+                  Pesan #1: bukaMenuPenjualan() (Kasir ke UI)
+                </option>
+                <option value="1">
+                  Pesan #2: scanBarcode(kode) (Kasir ke UI)
+                </option>
+                <option value="2">
+                  Pesan #3: cariBarang(kode) (UI ke POS)
+                </option>
+                <option value="3">
+                  Pesan #4: selectStok & Harga (POS ke DB)
+                </option>
+                <option value="4">
+                  Pesan #5: returnBarangData (DB ke POS)
+                </option>
+                <option value="5">
+                  Pesan #6: kalkulasiTotal() (POS ke UI)
+                </option>
+                <option value="6">
+                  Pesan #7: tampilkanBelanja() (UI ke Kasir)
+                </option>
+                <option value="7">
+                  Pesan #8: bayarUang(nominal) (Kasir ke UI)
+                </option>
+                <option value="8">
+                  Pesan #9: updateStok() & simpan() (UI ke POS)
+                </option>
+                <option value="9">
+                  Pesan #10: commitTransaction (POS ke DB)
+                </option>
+                <option value="10">Pesan #11: cetakStruk() (POS ke UI)</option>
+              </select>
             </div>
 
-            <!-- Detail Metadata Class -->
+            <!-- Dropdown Selektor Fitur Class Diagram -->
             <div id="class-metadata-wrapper" class="mb-4 flex-shrink-0 hidden">
-              <div
-                class="bg-slate-900 p-3.5 rounded-xl border border-slate-800"
+              <label class="block text-[11px] text-slate-400 mb-1.5 font-medium"
+                >Pilih Kelas / Blueprint Objek:</label
               >
-                <div
-                  class="text-[10px] font-bold text-slate-500 uppercase font-mono"
-                >
-                  Class Diagram Spec:
-                </div>
-                <h4 class="text-xs font-bold text-sky-400 mt-1">
-                  Struktur Database & Objek OOP
-                </h4>
-                <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
-                  Klik pada elemen kotak kelas di sebelah kiri untuk melihat
-                  rincian pemodelan data berorientasi objek serta implementasi
-                  kodenya.
-                </p>
-              </div>
+              <select
+                id="class-selector"
+                onchange="inspectClass(this.value)"
+                class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-sky-500 transition"
+              >
+                <option value="class-user">
+                  User Class (Otorisasi Pengguna)
+                </option>
+                <option value="class-transaksi">
+                  Transaksi Class (Struktur Faktur)
+                </option>
+                <option value="class-detail">
+                  DetailTransaksi Class (Komposisi Item)
+                </option>
+                <option value="class-barang">
+                  Barang Class (Master Inventaris)
+                </option>
+                <option value="class-member">
+                  Member Class (Loyalitas Pelanggan)
+                </option>
+              </select>
             </div>
 
             <!-- Kontainer Dokumen Detail (Scrollable) -->
@@ -1132,7 +1196,9 @@
           if (usecaseView) usecaseView.classList.remove("hidden");
           if (selectWrapper) selectWrapper.classList.remove("hidden");
           panelTitle.innerText = "Use Case Description";
-          inspectUseCase("uc01");
+          inspectUseCase(
+            document.getElementById("usecase-selector").value || "uc01",
+          );
           setTimeout(drawUseCases, 50);
         } else if (tab === "activity") {
           tabActivity.className =
@@ -1140,7 +1206,9 @@
           if (activityView) activityView.classList.remove("hidden");
           if (activityWrapper) activityWrapper.classList.remove("hidden");
           panelTitle.innerText = "Activity Specification";
-          inspectActivityStep("idle");
+          inspectActivityStep(
+            document.getElementById("activity-selector").value || "idle",
+          );
           setTimeout(drawActivityLines, 50);
         } else if (tab === "sequence") {
           tabSequence.className =
@@ -1148,7 +1216,9 @@
           if (sequenceView) sequenceView.classList.remove("hidden");
           if (sequenceWrapper) sequenceWrapper.classList.remove("hidden");
           panelTitle.innerText = "Sequence Step Info";
-          inspectSequenceStep("ready");
+          inspectSequenceStep(
+            document.getElementById("sequence-selector").value || "ready",
+          );
           setTimeout(drawSequenceDiagram, 50);
         } else if (tab === "class") {
           tabClass.className =
@@ -1156,7 +1226,9 @@
           if (classView) classView.classList.remove("hidden");
           if (classWrapper) classWrapper.classList.remove("hidden");
           panelTitle.innerText = "Class Inspector & Code";
-          inspectClass("class-user");
+          inspectClass(
+            document.getElementById("class-selector").value || "class-user",
+          );
           setTimeout(drawClassLines, 50);
         }
       }
@@ -1221,7 +1293,7 @@
           ],
           exception: [
             "<strong>Alur 2.a:</strong> Stok barang di sistem tercatat kosong (0). Sistem menampilkan pesan 'Stok Kosong!' dan transaksi tidak dapat dimasukkan.",
-            "<strong>Alur 5.a:</strong> Nominal uang bayar kurang. Sistem menampilkan peringatan dan mengunci opsi cetak struk hingga nominal mencukupi.",
+            "<strong>Alur 5.a:</strong> Nominal uang bayar kurang. Sistem menampilkan peringatan & mengunci opsi struk.",
           ],
         },
         uc04: {
@@ -1250,7 +1322,7 @@
           main: [
             "Kasir menanyakan kepemilikan kartu member kepada pelanggan.",
             "Kasir memindai barcode kartu member milik pelanggan.",
-            "Sistem memvalidasi ID member dan memotong total belanja sebesar 5% secara otomatis.",
+            "Sistem mempotong total belanja sebesar 5% secara otomatis setelah tervalidasi.",
           ],
           exception: [
             "<strong>Alur 3.a:</strong> Kartu member kedaluwarsa atau tidak aktif. Sistem mengeluarkan pesan 'Member Tidak Aktif' dan membatalkan pemotongan diskon.",
@@ -1332,12 +1404,24 @@
               else if (key === "restock") mapKey = "uc06";
               else if (key === "laporan") mapKey = "uc07";
 
-              document.getElementById("usecase-selector").value = mapKey;
               inspectUseCase(mapKey);
             } else if (id.startsWith("actor-")) {
               logActorAccess(id.replace("actor-", ""));
             } else if (id.startsWith("class-")) {
               inspectClass(id);
+            }
+          });
+        });
+
+      // Event click khusus untuk elemen di dalam Activity Diagram
+      document
+        .querySelectorAll(
+          ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
+        )
+        .forEach((node) => {
+          node.addEventListener("click", () => {
+            if (currentTab === "activity") {
+              inspectActivityStep(node.id);
             }
           });
         });
@@ -1500,6 +1584,11 @@
       function inspectUseCase(key) {
         const data = useCaseDatabase[key];
         if (!data) return;
+
+        const selector = document.getElementById("usecase-selector");
+        if (selector && selector.value !== key) {
+          selector.value = key;
+        }
 
         const container = document.getElementById("sop-document-container");
         if (!container) return;
@@ -1712,73 +1801,78 @@
         idle: {
           step: "Ready",
           title: "SOP Transaksi Point Of Sale",
-          desc: "Klik tombol 'Simulasikan Alur' untuk melihat pergerakan transaksional antara kasir dan sistem POS secara teratur.",
+          desc: "SOP ini mendefinisikan rangkaian aksi terkoordinasi antara Kasir dan Aplikasi Backend POS untuk mencatat pembelanjaan dengan andal.",
         },
         "act-start": {
           step: "01",
-          title: "Mulai SOP",
-          desc: "Workflow dimulai ketika kasir bersiap memproses belanjaan pelanggan.",
+          title: "Mulai SOP (Initial Node)",
+          desc: "Alur proses dimulai ketika seorang pelanggan membawa barang-barang belanjaan ke kasir untuk di-scan dan dihitung.",
         },
         "act-node-1": {
           step: "02",
           title: "Membuka Menu Penjualan",
-          desc: "Kasir mengaktifkan halaman transaksi kasir untuk menginisialisasi sesi baru.",
+          desc: "Kasir mengaktifkan modul penjualan Point Of Sale pada terminal komputer mereka untuk bersiap memproses item baru.",
         },
         "act-node-2": {
           step: "03",
           title: "Memindai Barcode Produk",
-          desc: "Kasir memindai barcode fisik pada kemasan produk menggunakan scanner.",
+          desc: "Kasir mengarahkan alat barcode scanner laser ke kode UPC barang belanjaan pelanggan guna memperoleh kode identifikasi produk unik.",
         },
         "act-node-3": {
           step: "04",
           title: "Mencari Data Barang & Cek Stok",
-          desc: "Sistem mengakses database katalog barang untuk memverifikasi nama, harga, dan level stok.",
+          desc: "Sistem menerima string data kode barcode, kemudian melakukan pencarian database secara internal pada tabel inventaris untuk mengambil informasi harga dan sisa stok.",
         },
         "act-dec-1": {
           step: "05",
-          title: "Decision Node",
-          desc: "Sistem menguji ketersediaan stok barang. Jika kosong, lanjut ke alur error; jika ada, lanjut ke keranjang.",
+          title: "Decision Node (Evaluasi Persediaan)",
+          desc: "Kondisi bersyarat: Sistem menguji apakah sisa stok barang di gudang digital lebih besar dari nol. Cabang jalur alur akan berubah berdasarkan hasil evaluasi ini.",
         },
         "act-node-err": {
           step: "05.a",
-          title: "Notifikasi Stok Kosong",
-          desc: "Sistem mengembalikan informasi bahwa item tidak dapat diproses karena ketiadaan fisik barang.",
+          title: "Tampilkan: Stok Kosong (Pengecualian)",
+          desc: "Sistem memberikan peringatan warna merah bahwa stok produk di database bernilai 0. Sistem POS menolak memasukkan barang ini ke keranjang belanja aktif.",
         },
         "act-end-err": {
           step: "05.b",
-          title: "SOP Berhenti (Error)",
-          desc: "Sesi input barang terputus akibat stok habis.",
+          title: "SOP Selesai dengan Gangguan",
+          desc: "Titik akhir transaksional yang gagal karena barang tidak dapat dijual. Kasir harus mengembalikan fisik produk atau menanyakan ketersediaan ke admin gudang.",
         },
         "act-node-4": {
           step: "06",
-          title: "Hitung Total & PPN",
-          desc: "Sistem menjumlahkan total belanjaan aktif dan menambahkan PPN sebesar 11%.",
+          title: "Hitung Total & Tambah PPN 11%",
+          desc: "Jika stok tersedia, sistem menyisipkan produk ke keranjang belanja virtual, melakukan agregasi subtotal, dan menerapkan tarif pajak pertambahan nilai (PPN) 11%.",
         },
         "act-node-5": {
           step: "07",
           title: "Menerima Pembayaran",
-          desc: "Kasir menginputkan jumlah pembayaran yang diterima (Uang tunai atau validasi QRIS).",
+          desc: "Kasir menanyakan metode transaksi (Cash/QRIS), menerima dana dari pelanggan, dan merekam nominal input pembayaran ke dalam kolom input sistem.",
         },
         "act-node-6": {
           step: "08",
-          title: "Potong Stok & Simpan Transaksi",
-          desc: "Sistem melakukan update data stok secara aman dan merekam transaksi di tabel Penjualan.",
+          title: "Kurangi Stok & Simpan Transaksi",
+          desc: "Sistem melakukan operasi penulisan database (INSERT) ke tabel Penjualan serta memperbarui tabel Barang untuk memotong jumlah stok fisik secara real-time.",
         },
         "act-node-7": {
           step: "09",
-          title: "Cetak Struk Belanja",
-          desc: "Printer POS mengeluarkan bukti transaksi belanja fisik untuk pembeli.",
+          title: "Cetak Struk Bukti Bayar",
+          desc: "Sistem mengirimkan instruksi rendering ke perangkat keras POS Thermal Printer untuk menerbitkan struk fisik bagi pembeli.",
         },
         "act-end": {
           step: "10",
-          title: "Transaksi Sukses",
-          desc: "Proses transaksi dinyatakan selesai dengan sukses.",
+          title: "Transaksi Sukses (Final Node)",
+          desc: "Operasi siklus Point Of Sale tuntas dengan sukses. Laci kasir ditutup kembali dan sistem siap menerima antrean transaksi berikutnya.",
         },
       };
 
       function inspectActivityStep(id) {
         const data = activityDescriptions[id];
         if (!data) return;
+
+        const selector = document.getElementById("activity-selector");
+        if (selector && selector.value !== id) {
+          selector.value = id;
+        }
 
         const container = document.getElementById("sop-document-container");
         if (!container) return;
@@ -1792,6 +1886,20 @@
               <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
           </div>
         `;
+
+        // Highlight token di canvas diagram
+        document
+          .querySelectorAll(
+            ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
+          )
+          .forEach((node) => {
+            node.classList.remove("active-token");
+          });
+
+        const activeNode = document.getElementById(id);
+        if (activeNode) {
+          activeNode.classList.add("active-token");
+        }
       }
 
       let activeTimeoutIds = [];
@@ -1822,20 +1930,11 @@
 
         steps.forEach((step) => {
           const tId = setTimeout(() => {
-            document
-              .querySelectorAll(
-                ".activity-node, #act-start, #act-end, #act-end-err, #act-dec-1",
-              )
-              .forEach((node) => {
-                node.classList.remove("active-token");
-              });
-
+            inspectActivityStep(step.id);
             const node = document.getElementById(step.id);
             if (node) {
-              node.classList.add("active-token");
               node.scrollIntoView({ behavior: "smooth", block: "center" });
             }
-            inspectActivityStep(step.id);
           }, step.delay);
           activeTimeoutIds.push(tId);
         });
@@ -1936,7 +2035,10 @@
             "http://www.w3.org/2000/svg",
             "path",
           );
-          path.setAttribute("class", "seq-line transition-all duration-300");
+          path.setAttribute(
+            "class",
+            "seq-line transition-all duration-300 cursor-pointer",
+          );
           path.setAttribute("id", `seq-msg-${idx}`);
           path.setAttribute("d", `M ${msg.from} ${msg.y} L ${msg.to} ${msg.y}`);
 
@@ -1959,7 +2061,7 @@
           );
           text.setAttribute(
             "class",
-            "seq-text font-mono font-medium text-[10px] select-none",
+            "seq-text font-mono font-medium text-[10px] select-none cursor-pointer",
           );
           text.setAttribute("id", `seq-txt-${idx}`);
           text.setAttribute("x", (msg.from + msg.to) / 2);
@@ -1967,6 +2069,13 @@
           text.setAttribute("text-anchor", "middle");
           text.setAttribute("fill", "#cbd5e1");
           text.textContent = msg.label;
+
+          // Event click untuk pesan pada Sequence Diagram
+          [path, text].forEach((el) => {
+            el.addEventListener("click", () => {
+              inspectSequenceStep(idx);
+            });
+          });
 
           svg.appendChild(text);
         });
@@ -1976,68 +2085,73 @@
         ready: {
           step: "Info",
           title: "Skenario Sequence Diagram",
-          desc: "Alur pesan sinkron dari atas ke bawah. Tekan tombol simulasi untuk melihat jalannya message call antar sistem secara real-time.",
+          desc: "Alur pesan sinkron dari atas ke bawah. Silakan klik garis pesan diagram secara langsung atau gunakan dropdown untuk mempelajari detail interaksi komponen sistem.",
         },
         0: {
           step: "1",
           title: "bukaMenuPenjualan()",
-          desc: "Kasir berinteraksi dengan antarmuka UI Penjualan untuk memulai form transaksi baru.",
+          desc: "Aksi awal Kasir (Actor) menekan tombol menu transaksi baru. Objek UI_Penjualan merespons dengan menampilkan formulir kasir kosong.",
         },
         1: {
           step: "2",
           title: "scanBarcode(kode)",
-          desc: "Kasir menginput kode barang hasil pindaian barcode scanner ke UI Penjualan.",
+          desc: "Kasir mengirim parameter data kode barang dari mesin pemindai fisik ke objek UI_Penjualan.",
         },
         2: {
           step: "3",
           title: "cariBarang(kode)",
-          desc: "UI mengirim parameter kode barang ke Sistem_POS (Controller) untuk diverifikasi.",
+          desc: "Objek batas antarmuka UI_Penjualan meneruskan pesan pencarian ke pengendali logika utama :Sistem_POS.",
         },
         3: {
           step: "4",
           title: "selectStok & Harga",
-          desc: "Sistem_POS melakukan query pencocokan ke Database (Entity Barang).",
+          desc: "Objek pengendali :Sistem_POS melakukan query database terstruktur untuk mencocokkan field inventaris pada entitas :Database.",
         },
         4: {
           step: "5",
           title: "returnBarangData",
-          desc: "Database mengembalikan record data nama barang, harga, dan sisa stok.",
+          desc: "Objek entitas :Database mengirimkan kembali data nama produk, harga eceran, dan sisa kuantitas persediaan ke controller.",
         },
         5: {
           step: "6",
           title: "kalkulasiTotal()",
-          desc: "Sistem_POS memproses subtotal beserta kalkulasi PPN 11%.",
+          desc: "Objek :Sistem_POS memproses akumulasi subtotal dari seluruh item belanja aktif dan menjumlahkannya dengan nilai PPN 11%.",
         },
         6: {
           step: "7",
           title: "tampilkanBelanja()",
-          desc: "UI merender informasi barang yang ditambahkan beserta total nominal pada layar monitor kasir.",
+          desc: "Objek batas UI_Penjualan dipicu untuk memperbarui rendering tabel di monitor kasir agar daftar belanja pelanggan ter-update.",
         },
         7: {
           step: "8",
           title: "bayarUang(nominal)",
-          desc: "Kasir memasukkan jumlah pembayaran tunai dari pelanggan ke sistem.",
+          desc: "Kasir menginput jumlah nominal fisik uang kertas pelanggan yang ia terima untuk diproses oleh antarmuka.",
         },
         8: {
           step: "9",
           title: "updateStok() & simpan()",
-          desc: "Sistem_POS memicu pengurangan stok digital dan merekam faktur penjualan baru.",
+          desc: "UI_Penjualan menginstruksikan modul controller :Sistem_POS untuk menyegarkan tabel dan mempersiapkan mutasi database.",
         },
         9: {
           step: "10",
           title: "commitTransaction",
-          desc: "Database melakukan penyimpanan permanen atas transaksi dan tabel persediaan.",
+          desc: "Objek controller :Sistem_POS mengunci transaksi (COMMIT) pada database :Database untuk mencatat penjualan baru dan memotong stok.",
         },
         10: {
           step: "11",
           title: "cetakStruk()",
-          desc: "Sistem mengirimkan perintah cetak fisik ke mesin printer kasir, mengakhiri siklus penjualan.",
+          desc: "Objek :Sistem_POS mengirimkan sinyal keluaran cetak ke mesin printer, menandakan siklus transaksi sequence tuntas.",
         },
       };
 
       function inspectSequenceStep(idx) {
         const data = sequenceStepsDesc[idx];
         if (!data) return;
+
+        const selector = document.getElementById("sequence-selector");
+        if (selector && selector.value !== String(idx)) {
+          selector.value = String(idx);
+        }
 
         const container = document.getElementById("sop-document-container");
         if (!container) return;
@@ -2051,6 +2165,32 @@
               <p class="text-slate-300 text-[11px] leading-relaxed">${data.desc}</p>
           </div>
         `;
+
+        // Atur highlight visual pada garis SVG Sequence
+        const svg = document.getElementById("sequence-svg");
+        if (svg) {
+          svg.querySelectorAll(".seq-line").forEach((l) => {
+            l.setAttribute(
+              "stroke",
+              l.getAttribute("stroke-dasharray") ? "#94a3b8" : "#38bdf8",
+            );
+            l.setAttribute(
+              "stroke-width",
+              l.getAttribute("stroke-dasharray") ? "1.5" : "2",
+            );
+          });
+          svg
+            .querySelectorAll(".seq-text")
+            .forEach((t) => t.setAttribute("fill", "#cbd5e1"));
+        }
+
+        const activeLine = document.getElementById(`seq-msg-${idx}`);
+        const activeText = document.getElementById(`seq-txt-${idx}`);
+        if (activeLine && activeText) {
+          activeLine.setAttribute("stroke", "#8b5cf6");
+          activeLine.setAttribute("stroke-width", "3");
+          activeText.setAttribute("fill", "#a78bfa");
+        }
       }
 
       function startSequenceSimulation() {
@@ -2097,20 +2237,15 @@
             if (idx >= 3 && idx <= 4 && actDb) actDb.classList.add("active");
             if (idx >= 9 && actDb) actDb.classList.add("active");
 
-            // Highlight line
+            inspectSequenceStep(idx);
+
             const activeLine = document.getElementById(`seq-msg-${idx}`);
-            const activeText = document.getElementById(`seq-txt-${idx}`);
-            if (activeLine && activeText) {
-              activeLine.setAttribute("stroke", "#8b5cf6");
-              activeLine.setAttribute("stroke-width", "3");
-              activeText.setAttribute("fill", "#a78bfa");
+            if (activeLine) {
               activeLine.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
               });
             }
-
-            inspectSequenceStep(idx);
           }, delay);
           activeTimeoutIds.push(tId);
         });
@@ -2127,11 +2262,6 @@
         oldPaths.forEach((p) => p.remove());
 
         // Relationships:
-        // 1. User -> Transaksi (Asosiasi)
-        // 2. Transaksi -> DetailTransaksi (Komposisi)
-        // 3. DetailTransaksi -> Barang (Asosiasi)
-        // 4. Transaksi -> Member (Asosiasi opsional)
-
         const relationships = [
           {
             from: "class-user",
@@ -2351,6 +2481,11 @@ public class Member {
       function inspectClass(classId) {
         const spec = classSpecs[classId];
         if (!spec) return;
+
+        const selector = document.getElementById("class-selector");
+        if (selector && selector.value !== classId) {
+          selector.value = classId;
+        }
 
         const container = document.getElementById("sop-document-container");
         if (!container) return;
